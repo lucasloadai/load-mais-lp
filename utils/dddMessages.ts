@@ -1,3 +1,77 @@
+export const dddEmojis: Record<string, string> = {
+  '11': '🎧',  // SP capital — balada, shows, agito
+  '12': '🚀',  // Vale do Paraíba — Embraer, INPE, aeronáutica
+  '13': '⚓',  // Santos — maior porto do Brasil
+  '14': '🥪',  // Bauru — berço do famoso sanduíche bauru
+  '15': '🎸',  // Sorocaba — capital do rock/metal interior SP
+  '16': '🍊',  // Ribeirão Preto — agro, cana, dinheiro
+  '17': '💃',  // Rio Preto — capital do forró e do axé SP
+  '18': '🌱',  // Presidente Prudente — interior verde
+  '19': '💡',  // Campinas — Unicamp, polo de inovação
+  '21': '🌴',  // Rio de Janeiro — Cristo, Copacabana, carioca lifestyle
+  '22': '🛢️',  // Campos — capital brasileira do petróleo
+  '24': '⛰️',  // Serra fluminense — Petrópolis, montanha
+  '27': '🦅',  // Vitória/ES — Espírito Santo, capital vibrante
+  '28': '🎶',  // Cachoeiro — terra natal de Roberto Carlos
+  '31': '🎸',  // BH — cena de rock e metal forte, Shows
+  '32': '🏙️',  // Juiz de Fora — cidade cosmopolita de MG
+  '33': '✈️',  // Gov. Valadares — famosa pela emigração aos EUA
+  '34': '🚛',  // Uberlândia — hub logístico do triângulo mineiro
+  '35': '☕',  // Sul de Minas — capital nacional do café
+  '37': '🧵',  // Divinópolis — polo de confecção e moda
+  '38': '🌵',  // Norte de Minas — sertão, resiliência
+  '41': '❄️',  // Curitiba — meme nacional do frio
+  '42': '🌾',  // Ponta Grossa — campos gerais, agro
+  '43': '☕',  // Londrina — norte do Paraná, café
+  '44': '🌸',  // Maringá — cidade planejada, "cidade jardim"
+  '45': '💧',  // Foz do Iguaçu — Cataratas, turismo
+  '46': '🌲',  // Sudoeste PR — natureza e trabalho
+  '47': '🍺',  // Joinville/Blumenau — Oktoberfest, colonização alemã
+  '48': '🏄',  // Florianópolis — surf, tech, Ilha da Magia
+  '49': '🍗',  // Chapecó — agroindústria, BRF, frango
+  '51': '🧉',  // Porto Alegre — chimarrão, identidade gaúcha
+  '53': '🍬',  // Pelotas — famosa pelos doces artesanais
+  '54': '🍷',  // Serra Gaúcha — capital brasileira do vinho
+  '55': '🤠',  // Santa Maria — gauchismo, tradição
+  '61': '🏛️',  // Brasília — poder, política, influência
+  '62': '🎵',  // Goiânia — maior polo sertanejo do Brasil
+  '63': '🌡️',  // Palmas — uma das cidades mais quentes do país
+  '64': '🐂',  // Sul goiano — agronegócio forte
+  '65': '🔥',  // Cuiabá — calor extremo + agro gigante
+  '66': '🚜',  // Rondonópolis — logística e soja
+  '67': '🐊',  // Campo Grande — Pantanal, natureza única
+  '68': '🌳',  // Rio Branco/Acre — floresta, meme "o Acre existe"
+  '69': '🌿',  // Porto Velho — Rondônia, Amazônia
+  '71': '🥁',  // Salvador — axé, carnaval, Pelourinho
+  '73': '🍫',  // Sul da Bahia — Ilhéus, cacau e chocolate
+  '74': '🌵',  // Sertão baiano — resistência e força
+  '75': '🎉',  // Feira de Santana — Micareta, maior fora de época
+  '77': '🤠',  // Oeste baiano — agro e sertão
+  '79': '🦀',  // Aracaju/SE — caranguejo, menor estado mas grande sabor
+  '81': '🎭',  // Recife — frevo, carnaval, polo criativo
+  '82': '🌊',  // Maceió — praias mais bonitas do Brasil
+  '83': '☀️',  // João Pessoa — sol forte, cidade histórica
+  '84': '🪂',  // Natal — Genipabu, buggy, dunas
+  '85': '🏄',  // Fortaleza — surf, praia urbana, agito
+  '86': '🌶️',  // Teresina — calor intenso, nordeste interior
+  '87': '🌵',  // Sertão PE — Petrolina, força do sertão
+  '88': '🎸',  // Cariri/CE — Luiz Gonzaga, forró raiz, cultura forte
+  '89': '💎',  // Sul PI — Sete Cidades, riqueza escondida
+  '91': '🥣',  // Belém — capital mundial do açaí
+  '92': '🌿',  // Manaus — polo industrial na maior floresta
+  '93': '🐬',  // Santarém — boto cor de rosa, rios amazônicos
+  '94': '⛏️',  // Marabá — minério, ouro, Serra dos Carajás
+  '95': '🦁',  // Boa Vista/RR — fronteira, diversidade, Monte Roraima
+  '96': '⚽',  // Macapá — estádio Zerão na linha do Equador
+  '97': '🐍',  // Interior AM — biodiversidade extrema
+  '98': '🏖️',  // São Luís — Lençóis Maranhenses, patrimônio UNESCO
+  '99': '🌾',  // Imperatriz/MA — interior crescendo
+}
+
+export function getDDDEmoji(ddd: string): string {
+  return dddEmojis[ddd] ?? '📍'
+}
+
 export const dddMessages: Record<string, string> = {
   "11": "São Paulo nunca dorme. Sua empresa também não deveria parar de crescer.",
   "12": "Vale do Paraíba tem potencial enorme. Vamos escalar seu negócio juntos.",

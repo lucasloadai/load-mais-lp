@@ -7,6 +7,7 @@ import { trackEvent } from '@/utils/tracking'
 import { useEffect, useRef, useState } from 'react'
 import { EntryModal } from './EntryModal'
 import { AgendarModal } from './AgendarModal'
+import { CountUp } from './CountUp'
 
 const heroPhrases = ['da sua presença.', 'exclusivamente de você.', 'de improviso.']
 
@@ -55,6 +56,25 @@ const deliverables = [
   'Implementação prática junto ao seu time.',
 ]
 
+const deliverableSteps = [
+  {
+    title: 'Diagnóstico',
+    desc: 'Analisamos processos, posicionamento e dados reais do negócio.',
+  },
+  {
+    title: 'Estruturação',
+    desc: 'Desenvolvemos o sistema comercial, estratégia e os indicadores.',
+  },
+  {
+    title: 'Implementação',
+    desc: 'Executamos junto ao time. O comercial funciona — e/o cliente vem.',
+  },
+  {
+    title: 'Otimização',
+    desc: 'Revisamos métricas e ajustamos para confirmar e negociar resultados.',
+  },
+]
+
 const steps = [
   {
     num: '01',
@@ -98,24 +118,6 @@ const steps = [
   },
 ]
 
-const deliverableSteps = [
-  {
-    title: 'Diagnóstico',
-    desc: 'Analisamos processos, posicionamento e dados reais do negócio.',
-  },
-  {
-    title: 'Estruturação',
-    desc: 'Desenvolvemos o sistema comercial, estratégia e os indicadores.',
-  },
-  {
-    title: 'Implementação',
-    desc: 'Executamos junto ao time. O comercial funciona — e/o cliente vem.',
-  },
-  {
-    title: 'Otimização',
-    desc: 'Revisamos métricas e ajustamos para confirmar e negociar resultados.',
-  },
-]
 
 const plans = [
   {
@@ -208,7 +210,44 @@ export function LandingPage() {
   const [visible, setVisible] = useState(true)
   const [showEntryModal, setShowEntryModal] = useState(false)
   const [showAgendarModal, setShowAgendarModal] = useState(false)
-  const [leadName, setLeadName] = useState('')
+  const [leadName, setLeadName] = useState(() => {
+    if (typeof window === 'undefined') return ''
+    return localStorage.getItem('loadmais_nome') ?? ''
+  })
+  const [instagramProfile, setInstagramProfile] = useState<{
+    username: string
+    biography: string
+    followers_count: number
+    category: string | null
+    posts: { caption: string; likes: number; comments: number }[]
+  } | null>(null)
+  const [generatedCopy, setGeneratedCopy] = useState<string | null>(null)
+  const [recommendedPlan, setRecommendedPlan] = useState<string | null>(null)
+
+  const firstName = leadName ? leadName.split(' ')[0] : ''
+
+  // Gerar copy personalizada via Claude quando perfil é confirmado
+  useEffect(() => {
+    if (!instagramProfile || !firstName) return
+    fetch('/api/generate-copy', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        firstName,
+        username: instagramProfile.username,
+        followers_count: instagramProfile.followers_count,
+        biography: instagramProfile.biography,
+        category: instagramProfile.category,
+        posts: instagramProfile.posts,
+      }),
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.copy) setGeneratedCopy(data.copy)
+        if (data.recommendedPlan) setRecommendedPlan(data.recommendedPlan)
+      })
+      .catch(() => {})
+  }, [instagramProfile, firstName])
 
   // Phrase cycling
   useEffect(() => {
@@ -222,7 +261,7 @@ export function LandingPage() {
     return () => clearInterval(interval)
   }, [])
 
-  // Entry modal after 2s (só se ainda não tem nome)
+  // Entry modal after 2s (só se ainda não tem nome salvo)
   useEffect(() => {
     if (leadName) return
     const t = setTimeout(() => setShowEntryModal(true), 2000)
@@ -232,6 +271,7 @@ export function LandingPage() {
   const {
     form,
     dddMessage,
+    dddEmoji,
     showInstagramModal,
     setShowInstagramModal,
     formData,
@@ -240,11 +280,13 @@ export function LandingPage() {
     extractCleanPhone,
   } = useLeadForm()
 
-  // Intercepta submit para capturar nome e fechar modal
+  // Intercepta submit para capturar nome, persistir e fechar modal
   const onSubmit = (e: React.FormEvent) => {
     const nome = form.getValues('nome')
     if (nome?.length >= 2) {
-      setLeadName(nome.trim())
+      const trimmed = nome.trim()
+      setLeadName(trimmed)
+      localStorage.setItem('loadmais_nome', trimmed)
       setShowEntryModal(false)
     }
     originalOnSubmit(e)
@@ -252,6 +294,28 @@ export function LandingPage() {
 
   useEffect(() => {
     trackEvent('LeadStart')
+  }, [])
+
+  // Scroll reveal
+  useEffect(() => {
+    const els = document.querySelectorAll<HTMLElement>('[data-reveal]')
+    els.forEach((el) => {
+      el.style.transitionDelay = `${el.dataset.delay ?? 0}ms`
+      el.classList.add('reveal-ready')
+    })
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add('is-visible')
+            observer.unobserve(e.target)
+          }
+        })
+      },
+      { threshold: 0.12 }
+    )
+    els.forEach((el) => observer.observe(el))
+    return () => observer.disconnect()
   }, [])
 
   const scrollToForm = () => {
@@ -262,8 +326,6 @@ export function LandingPage() {
     plansRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
-  // Personalização — primeiro nome
-  const firstName = leadName ? leadName.split(' ')[0] : ''
 
   return (
     <main className="min-h-screen bg-[#080E18] text-white font-sans antialiased overflow-x-hidden">
@@ -345,7 +407,7 @@ export function LandingPage() {
             </span>
           </h1>
           <p className="text-base md:text-lg text-white/55 max-w-xl mx-auto leading-relaxed">
-            A LOAD+ estrutura marketing, vendas e processos comerciais para gerar previsibilidade, margem e crescimento sustentável.
+            A LOAD+ soma inteligência no seu marketing, vendas e processos gerando previsibilidade e resultado real na prática.
           </p>
         </div>
 
@@ -360,7 +422,7 @@ export function LandingPage() {
             {firstName ? `${firstName}, vamos construir` : 'Quero construir'}
           </button>
           <button
-            onClick={() => setShowAgendarModal(true)}
+            onClick={scrollToPlans}
             className="flex items-center justify-center gap-2 px-7 py-3.5 border border-white/[0.12] hover:border-white/25 text-white/70 hover:text-white font-semibold text-sm rounded-xl transition-all duration-200 hover:bg-white/[0.04]"
           >
             Ver propostas
@@ -371,7 +433,9 @@ export function LandingPage() {
         <div className="relative z-10 flex items-center divide-x divide-white/[0.08] border border-white/[0.08] rounded-2xl bg-white/[0.03] overflow-hidden">
           {stats.map((s) => (
             <div key={s.label} className="flex flex-col items-center gap-0.5 px-8 py-5">
-              <span className="text-2xl md:text-3xl font-extrabold text-[#1A6BFF]">{s.value}</span>
+              <span className="text-2xl md:text-3xl font-extrabold text-[#1A6BFF]">
+                <CountUp value={s.value} />
+              </span>
               <span className="text-[0.7rem] text-white/40 text-center leading-tight max-w-[80px]">{s.label}</span>
             </div>
           ))}
@@ -380,7 +444,7 @@ export function LandingPage() {
 
       {/* ── PROBLEMA ────────────────────────────────────────── */}
       <section className="px-5 py-24 max-w-6xl mx-auto">
-        <div className="text-center mb-14">
+        <div data-reveal className="text-center mb-14">
           <div className="inline-flex items-center gap-2 text-[0.72rem] font-extrabold uppercase tracking-[1.5px] text-[#FF6B00] mb-5 px-4 py-1.5 rounded-full border border-[#FF6B00]/40 bg-[#FF6B00]/[0.08] shadow-[0_0_14px_rgba(255,107,0,0.15)]">
             <span className="text-[#FF6B00] font-black text-sm leading-none">+</span>
             Por que sua empresa trava
@@ -392,9 +456,11 @@ export function LandingPage() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-4">
-          {problems.map((p) => (
+          {problems.map((p, idx) => (
             <div
               key={p.title}
+              data-reveal
+              data-delay={idx * 120}
               className="p-7 rounded-2xl border border-white/[0.07] bg-white/[0.025] hover:border-[#FF6B00]/40 hover:bg-[#FF6B00]/[0.03] hover:-translate-y-2 hover:shadow-[0_12px_40px_rgba(255,107,0,0.12)] transition-all duration-300 group"
             >
               <div className="w-10 h-10 rounded-xl bg-[#1A6BFF]/10 border border-[#1A6BFF]/25 flex items-center justify-center text-[#1A6BFF] mb-5 group-hover:bg-[#FF6B00]/15 group-hover:border-[#FF6B00]/35 group-hover:text-[#FF6B00] group-hover:shadow-[0_0_16px_rgba(255,107,0,0.2)] transition-all duration-300">
@@ -410,14 +476,14 @@ export function LandingPage() {
       {/* ── SOLUÇÃO ─────────────────────────────────────────── */}
       <section className="px-5 py-24 bg-gradient-to-b from-transparent via-[#0D1830]/50 to-transparent">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
+          <div data-reveal className="text-center mb-12">
             <div className="inline-flex items-center gap-2 text-[0.72rem] font-extrabold uppercase tracking-[1.5px] text-[#FF6B00] mb-5 px-4 py-1.5 rounded-full border border-[#FF6B00]/40 bg-[#FF6B00]/[0.08] shadow-[0_0_14px_rgba(255,107,0,0.15)]">
               <span className="text-[#FF6B00] font-black text-sm leading-none">+</span>
               O que entregamos
             </div>
             <h2 className="text-4xl md:text-[2.75rem] font-extrabold leading-tight mb-4">
               Não entregamos marketing.
-              <br />Estruturamos um <span className="text-[#1A6BFF]">sistema comercial.</span>
+              <br />Estruturamos um <span className="text-[#1A6BFF]">sistema comercial inteligente.</span>
             </h2>
             <p className="text-white/50 leading-relaxed text-sm max-w-lg mx-auto">
               Conectamos aquisição, vendas e dados para gerar crescimento previsível.
@@ -427,14 +493,11 @@ export function LandingPage() {
           <div className="grid md:grid-cols-2 gap-12 items-start">
             {/* Checklist com linha conectora */}
             <ul className="relative">
-              {/* Linha vertical */}
               <div className="absolute left-[9px] top-3 bottom-3 w-px bg-gradient-to-b from-[#1A6BFF]/60 via-[#1A6BFF]/30 to-transparent" />
               {deliverables.map((d, idx) => (
                 <li key={d} className="relative flex items-start gap-4 pb-5 last:pb-0">
                   <span className={`w-[18px] h-[18px] rounded-full flex items-center justify-center text-[0.55rem] font-bold flex-shrink-0 mt-[2px] relative z-10 shadow-[0_0_10px_rgba(26,107,255,0.45)] ${
-                    idx === 0
-                      ? 'bg-[#1A6BFF] text-white'
-                      : 'bg-[#1A6BFF]/80 text-white'
+                    idx === 0 ? 'bg-[#1A6BFF] text-white' : 'bg-[#1A6BFF]/80 text-white'
                   }`}>✓</span>
                   <span className="text-sm text-white/65 leading-relaxed">{d}</span>
                 </li>
@@ -477,7 +540,7 @@ export function LandingPage() {
 
       {/* ── COMO FUNCIONA ───────────────────────────────────── */}
       <section className="px-5 py-24 max-w-6xl mx-auto">
-        <div className="text-center mb-14">
+        <div data-reveal className="text-center mb-14">
           <div className="inline-flex items-center gap-2 text-[0.72rem] font-extrabold uppercase tracking-[1.5px] text-[#FF6B00] mb-5 px-4 py-1.5 rounded-full border border-[#FF6B00]/40 bg-[#FF6B00]/[0.08] shadow-[0_0_14px_rgba(255,107,0,0.15)]">
             <span className="text-[#FF6B00] font-black text-sm leading-none">+</span>
             O fluxo básico
@@ -489,7 +552,7 @@ export function LandingPage() {
 
         <div className="grid md:grid-cols-4 gap-4">
           {steps.map((s, i) => (
-            <div key={s.num} className="relative">
+            <div key={s.num} data-reveal data-delay={i * 100} className="relative">
               {i < steps.length - 1 && (
                 <div className="hidden md:block absolute top-[2.25rem] left-[62%] w-full h-px bg-gradient-to-r from-[#1A6BFF]/35 to-transparent z-10" />
               )}
@@ -509,7 +572,7 @@ export function LandingPage() {
       {/* ── ESCADA DE PROPOSTAS ──────────────────────────────── */}
       <section ref={plansRef} className="px-5 py-24 bg-gradient-to-b from-transparent via-[#0D1830]/50 to-transparent">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-14">
+          <div data-reveal className="text-center mb-14">
             <div className="inline-flex items-center gap-2 text-[0.72rem] font-extrabold uppercase tracking-[1.5px] text-[#FF6B00] mb-5 px-4 py-1.5 rounded-full border border-[#FF6B00]/40 bg-[#FF6B00]/[0.08] shadow-[0_0_14px_rgba(255,107,0,0.15)]">
               <span className="text-[#FF6B00] font-black text-sm leading-none">+</span>
               Escada de maturidade
@@ -521,31 +584,97 @@ export function LandingPage() {
             <p className="text-white/45 text-sm mt-4 max-w-md mx-auto leading-relaxed">
               Cada proposta representa um nível de maturidade do seu sistema comercial.
             </p>
+
+            {/* Bloco personalizado pós-Instagram */}
+            {instagramProfile && firstName && (
+              <div className="mt-8 mx-auto max-w-2xl">
+                <div className="relative rounded-2xl border border-[#1A6BFF]/30 bg-[#1A6BFF]/[0.06] px-6 py-5 text-left overflow-hidden">
+                  <div className="absolute top-0 right-0 w-40 h-40 bg-[#1A6BFF]/10 rounded-full blur-[50px] pointer-events-none" />
+
+                  {/* Header */}
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="#1A6BFF" strokeWidth={1.5} className="w-4 h-4 shrink-0">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
+                      </svg>
+                      <span className="text-[0.65rem] font-bold uppercase tracking-[1.5px] text-[#1A6BFF]/80">
+                        Análise do seu perfil
+                      </span>
+                    </div>
+                    <span className="text-[0.65rem] text-white/30 font-medium">
+                      @{instagramProfile.username}
+                      {instagramProfile.followers_count > 0 && (
+                        <> · {instagramProfile.followers_count >= 1000
+                          ? `${(instagramProfile.followers_count / 1000).toFixed(1).replace('.0', '')}k`
+                          : instagramProfile.followers_count} seguidores</>
+                      )}
+                    </span>
+                  </div>
+
+                  {/* Copy gerada por IA ou fallback */}
+                  <p className="text-white/80 text-sm leading-relaxed relative z-10">
+                    {generatedCopy ? (
+                      <>
+                        <span className="text-[#FF6B00] font-bold">{firstName}</span>, {generatedCopy}{' '}
+                        <span className="text-white/50">A proposta ideal para o seu momento está logo abaixo.</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-[#FF6B00] font-bold">{firstName}</span>, analisamos seu perfil
+                        {instagramProfile.category && <> em <span className="font-semibold">{instagramProfile.category}</span></>}
+                        . Com o que vemos, seu negócio está pronto para estruturar um sistema comercial real.{' '}
+                        <span className="text-white/50">A proposta ideal para o seu momento está logo abaixo.</span>
+                      </>
+                    )}
+                  </p>
+                  {recommendedPlan && (
+                    <div className="mt-4 flex items-center gap-2">
+                      <span className="text-[0.65rem] text-white/30 uppercase tracking-widest">Proposta recomendada para você</span>
+                      <span className="text-[0.65rem] font-extrabold text-[#FF6B00] bg-[#FF6B00]/10 border border-[#FF6B00]/30 rounded-full px-2.5 py-0.5">
+                        {plans.find(p => p.id === recommendedPlan)?.name ?? recommendedPlan}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="grid md:grid-cols-4 gap-4">
-            {plans.map((plan) => (
+            {plans.map((plan, idx) => {
+              const isRecommended = recommendedPlan === plan.id
+              const isHighlighted = isRecommended || plan.highlight
+              return (
               <div
                 key={plan.id}
+                data-reveal
+                data-delay={idx * 100}
                 className={`relative rounded-[18px] p-6 flex flex-col transition-all duration-300 hover:-translate-y-2 ${
-                  plan.highlight
+                  isRecommended
+                    ? 'bg-[#0D1A30] border-[1.5px] border-[#FF6B00]/70 shadow-[0_8px_40px_rgba(255,107,0,0.22)] hover:shadow-[0_16px_48px_rgba(255,107,0,0.32)]'
+                    : isHighlighted
                     ? 'bg-[#0D1A30] border-[1.5px] border-[#1A6BFF]/60 shadow-[0_8px_40px_rgba(26,107,255,0.22)] hover:shadow-[0_16px_48px_rgba(26,107,255,0.32)]'
                     : 'bg-[#0C1524] border-[1.5px] border-white/[0.08] hover:border-[#FF6B00]/35 hover:shadow-[0_12px_36px_rgba(255,107,0,0.1)]'
                 }`}
               >
                 {/* Top badges */}
                 <div className="flex items-start justify-between mb-5">
-                  <div className="w-8 h-8 rounded-full bg-[#1A6BFF] flex items-center justify-center">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isRecommended ? 'bg-[#FF6B00]' : 'bg-[#1A6BFF]'}`}>
                     <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5 text-white">
                       <path d="M8 5v14l11-7z" />
                     </svg>
                   </div>
-                  {plan.popular && (
+                  {isRecommended && (
+                    <div className="inline-flex items-center gap-1 border border-[#FF6B00]/60 bg-[#FF6B00]/10 rounded-full px-2.5 py-1 text-[0.6rem] font-extrabold tracking-[1px] uppercase text-[#FF6B00]">
+                      ✦ Ideal para você
+                    </div>
+                  )}
+                  {!isRecommended && plan.popular && (
                     <div className="inline-flex items-center gap-1 border border-[#FF6B00]/40 rounded-full px-2.5 py-1 text-[0.6rem] font-extrabold tracking-[1px] uppercase text-[#FF6B00]">
                       ★ Mais popular
                     </div>
                   )}
-                  {plan.highlight && (
+                  {!isRecommended && plan.highlight && (
                     <div className="inline-flex items-center gap-1 border border-[#1A6BFF]/40 bg-[#1A6BFF]/10 rounded-full px-2.5 py-1 text-[0.6rem] font-extrabold tracking-[1px] uppercase text-[#1A6BFF]">
                       ● Recomendado
                     </div>
@@ -591,7 +720,8 @@ export function LandingPage() {
                   Começar aqui
                 </button>
               </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </section>
@@ -599,7 +729,7 @@ export function LandingPage() {
       {/* ── QUALIFICAÇÃO ────────────────────────────────────── */}
       <section className="px-5 py-24">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-14">
+          <div data-reveal className="text-center mb-14">
             <div className="inline-flex items-center gap-2 text-[0.72rem] font-extrabold uppercase tracking-[1.5px] text-[#FF6B00] mb-5 px-4 py-1.5 rounded-full border border-[#FF6B00]/40 bg-[#FF6B00]/[0.08] shadow-[0_0_14px_rgba(255,107,0,0.15)]">
               <span className="text-[#FF6B00] font-black text-sm leading-none">+</span>
               Qualificação
@@ -614,7 +744,7 @@ export function LandingPage() {
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
-            <div className="p-7 rounded-2xl border border-green-500/[0.18] bg-green-500/[0.04]">
+            <div data-reveal data-delay="0" className="p-7 rounded-2xl border border-green-500/[0.18] bg-green-500/[0.04]">
               <h3 className="font-bold text-green-400 mb-5 text-sm flex items-center gap-2">
                 <span className="w-5 h-5 rounded-full border border-green-500/40 flex items-center justify-center text-xs">✓</span>
                 Para quem é
@@ -628,7 +758,7 @@ export function LandingPage() {
                 ))}
               </ul>
             </div>
-            <div className="p-7 rounded-2xl border border-red-500/[0.18] bg-red-500/[0.04]">
+            <div data-reveal data-delay="150" className="p-7 rounded-2xl border border-red-500/[0.18] bg-red-500/[0.04]">
               <h3 className="font-bold text-red-400 mb-5 text-sm flex items-center gap-2">
                 <span className="w-5 h-5 rounded-full border border-red-500/40 flex items-center justify-center text-xs">✗</span>
                 Para quem não é
@@ -649,7 +779,7 @@ export function LandingPage() {
       {/* ── CTA FINAL / FORM ────────────────────────────────── */}
       <section ref={formRef} className="px-5 py-24">
         <div className="max-w-xl mx-auto">
-          <div className="text-center mb-12">
+          <div data-reveal className="text-center mb-12">
             <div className="inline-flex items-center gap-2 text-[0.72rem] font-extrabold uppercase tracking-[1.5px] text-[#FF6B00] mb-6 px-4 py-1.5 rounded-full border border-[#FF6B00]/40 bg-[#FF6B00]/[0.08] shadow-[0_0_14px_rgba(255,107,0,0.15)]">
               <span className="text-[#FF6B00] font-black text-sm leading-none">+</span>
               Próximo passo
@@ -704,6 +834,7 @@ export function LandingPage() {
         <EntryModal
           form={form}
           dddMessage={dddMessage}
+          dddEmoji={dddEmoji}
           handlePhoneChange={handlePhoneChange}
           onSubmit={onSubmit}
           onClose={() => setShowEntryModal(false)}
@@ -726,6 +857,7 @@ export function LandingPage() {
           utmMedium={utmMedium}
           utmCampaign={utmCampaign}
           onClose={() => setShowInstagramModal(false)}
+          onProfileConfirmed={(profile) => setInstagramProfile(profile)}
           extractCleanPhone={extractCleanPhone}
         />
       )}

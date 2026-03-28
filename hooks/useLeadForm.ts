@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { applyPhoneMask, extractDDD, extractCleanPhone } from '@/utils/phoneMask'
-import { getDDDMessage } from '@/utils/dddMessages'
+import { getDDDMessage, getDDDEmoji } from '@/utils/dddMessages'
 import { trackEvent } from '@/utils/tracking'
 
 const leadSchema = z.object({
@@ -21,6 +21,7 @@ export type LeadFormData = z.infer<typeof leadSchema>
 export function useLeadForm() {
   const [ddd, setDdd] = useState('')
   const [dddMessage, setDddMessage] = useState('')
+  const [dddEmoji, setDddEmoji] = useState('📍')
   const [showInstagramModal, setShowInstagramModal] = useState(false)
   const [formData, setFormData] = useState<LeadFormData | null>(null)
 
@@ -40,6 +41,7 @@ export function useLeadForm() {
         if (newDdd !== ddd) {
           setDdd(newDdd)
           setDddMessage(getDDDMessage(newDdd))
+          setDddEmoji(getDDDEmoji(newDdd))
           trackEvent('DDDDetected', { ddd: newDdd })
         }
       } else {
@@ -63,6 +65,7 @@ export function useLeadForm() {
     form,
     ddd,
     dddMessage,
+    dddEmoji,
     showInstagramModal,
     setShowInstagramModal,
     formData,

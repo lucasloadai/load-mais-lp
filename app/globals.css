@@ -33,6 +33,26 @@
   animation: marquee 55s linear infinite;
 }
 
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-7px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.reveal-ready {
+  opacity: 0;
+  translate: 0 28px;
+  transition: opacity 0.6s ease, translate 0.6s ease;
+}
+
+.reveal-ready.is-visible {
+  opacity: 1;
+  translate: 0 0;
+}
+
 @layer utilities {
   .text-gradient {
     background: linear-gradient(135deg, #FF6B00, #E94560);

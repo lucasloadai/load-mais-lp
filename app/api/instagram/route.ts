@@ -13,57 +13,42 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Username inválido.' }, { status: 400 })
   }
 
-  const apiKey = process.env.RAPIDAPI_KEY
-  const apiHost = process.env.RAPIDAPI_INSTAGRAM_HOST
+  const token = process.env.APIFY_TOKEN
 
-  if (apiKey && apiHost) {
+  if (token) {
     try {
-      const body = new URLSearchParams({ username_or_url: `https://www.instagram.com/${username}/` })
-
       const res = await fetch(
-        `https://${apiHost}/ig_get_fb_profile_v3.php`,
+        `https://api.apify.com/v2/acts/apify~instagram-profile-scraper/run-sync-get-dataset-items?token=${token}&timeout=25`,
         {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'x-rapidapi-host': apiHost,
-            'x-rapidapi-key': apiKey,
-          },
-          body: body.toString(),
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ usernames: [username] }),
           next: { revalidate: 0 },
         }
       )
 
       if (res.ok) {
-        const json = await res.json()
-        const user = json?.data ?? json?.user ?? json
+        const items = await res.json()
+        const u = Array.isArray(items) ? items[0] : null
 
-        if (user && (user.username || user.user_name)) {
-          const rawPic =
-            user.profile_pic_url_hd ??
-            user.profile_pic_url ??
-            user.profile_image ??
-            user.profile_pic ??
-            user.avatar ??
-            user.pic ??
-            ''
-
+        if (u && u.username) {
+          const rawPic = u.profilePicUrl ?? u.profilePicUrlHD ?? ''
           const profile_pic_url = rawPic
             ? `/api/proxy-image?url=${encodeURIComponent(rawPic)}`
             : ''
 
           return NextResponse.json({
             profile: {
-              username: user.username ?? user.user_name ?? username,
-              full_name: user.full_name ?? user.fullname ?? '',
-              followers_count: user.followers ?? user.follower_count ?? user.edge_followed_by?.count ?? 0,
-              following_count: user.following ?? user.following_count ?? user.edge_follow?.count ?? 0,
+              username: u.username ?? username,
+              full_name: u.fullName ?? '',
+              followers_count: u.followersCount ?? 0,
+              following_count: u.followsCount ?? 0,
               profile_pic_url,
-              is_verified: user.is_verified ?? user.verified ?? false,
-              biography: user.biography ?? user.bio ?? '',
-              external_url: user.external_url ?? null,
-              media_count: user.media_count ?? user.posts ?? user.edge_owner_to_timeline_media?.count ?? 0,
-              category: user.category ?? user.category_name ?? null,
+              is_verified: u.isVerified ?? false,
+              biography: u.biography ?? '',
+              external_url: u.externalUrl ?? null,
+              media_count: u.postsCount ?? 0,
+              category: u.businessCategoryName ?? null,
               exists: true,
             },
           })
