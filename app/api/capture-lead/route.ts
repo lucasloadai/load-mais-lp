@@ -17,29 +17,35 @@ const schema = z.object({
   instagram: z.string().max(50).optional(),
   instagram_followers: z.number().int().min(0).optional(),
   instagram_verified: z.boolean().optional(),
-  lead_score: z.number().int().min(0).optional(),
-  lead_tier: z.enum(['curioso', 'potencial', 'premium']).optional(),
   utm_source: z.string().max(100).optional(),
   utm_medium: z.string().max(100).optional(),
   utm_campaign: z.string().max(100).optional(),
 })
 
+const patchSchema = z.object({
+  whatsapp: z.string().min(10).max(20),
+  faturamento_answer: z.string(),
+  dor_answer: z.string(),
+  momento_answer: z.string(),
+  qualification_score: z.number().int().min(0).max(100),
+  qualification_tier: z.enum(['FRIO', 'MORNO', 'QUENTE', 'PRONTO']),
+})
+
 const TIER_COLOR: Record<string, string> = {
-  premium: '#16a34a',
-  potencial: '#1A6BFF',
-  curioso: '#d97706',
+  PRONTO: '#10B981',
+  QUENTE: '#3B82F6',
+  MORNO:  '#F59E0B',
+  FRIO:   '#6B7280',
 }
 
 const TIER_LABEL: Record<string, string> = {
-  premium: '⭐ Premium',
-  potencial: '🔵 Potencial',
-  curioso: '👀 Curioso',
+  PRONTO: '🟢 Pronto',
+  QUENTE: '🔵 Quente',
+  MORNO:  '🟡 Morno',
+  FRIO:   '⚪ Frio',
 }
 
 function buildEmailHtml(data: z.infer<typeof schema>): string {
-  const tier = data.lead_tier ?? 'curioso'
-  const tierColor = TIER_COLOR[tier] ?? '#6b7280'
-  const tierLabel = TIER_LABEL[tier] ?? tier
   const now = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })
   const whatsappLink = `https://wa.me/55${data.whatsapp.replace(/\D/g, '')}`
 
@@ -80,12 +86,6 @@ function buildEmailHtml(data: z.infer<typeof schema>): string {
           <h1 style="margin:0;font-size:22px;font-weight:800;color:#f9fafb">Novo lead recebido 🚀</h1>
         </td></tr>
 
-        <!-- Tier badge -->
-        <tr><td style="background:#111827;padding:0 32px 20px">
-          <span style="display:inline-block;background:${tierColor}22;border:1px solid ${tierColor}66;color:${tierColor};font-size:12px;font-weight:700;padding:4px 14px;border-radius:999px">${tierLabel}</span>
-          ${data.lead_score != null ? `<span style="margin-left:8px;color:#6b7280;font-size:12px">Score: <b style="color:#f3f4f6">${data.lead_score}</b></span>` : ''}
-        </td></tr>
-
         <!-- Tabela de dados -->
         <tr><td style="background:#111827;padding:0 32px 24px">
           <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #1f2937;border-radius:10px;overflow:hidden">
@@ -123,7 +123,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Erro ao salvar lead.' }, { status: 500 })
     }
 
-    // Dispara e-mail de notificação (não bloqueia resposta se falhar)
     const notifyEmail = process.env.NOTIFY_EMAIL
     const resendApiKey = process.env.RESEND_API_KEY
     if (notifyEmail && resendApiKey) {
@@ -132,7 +131,62 @@ export async function POST(req: NextRequest) {
         to: notifyEmail,
         subject: `🚀 Novo lead: ${data.nome} (${data.ddd}) — LOAD+`,
         html: buildEmailHtml(data),
-      }).catch(() => {}) // silencia erro pra não afetar o fluxo do usuário
+      }).catch(() => {})
+    }
+
+    return NextResponse.json({ success: true })
+  } catch {
+    return NextResponse.json({ error: 'Dados inválidos.' }, { status: 400 })
+  }
+}
+
+// Atualiza qualificação do lead após responder o form da Escada
+export async function PATCH(req: NextRequest) {
+  try {
+    const body = await req.json()
+    const data = patchSchema.parse(body)
+
+    const whatsappClean = data.whatsapp.replace(/\D/g, '')
+    const tier = data.qualification_tier
+    const tierColor = TIER_COLOR[tier]
+    const tierLabel = TIER_LABEL[tier]
+
+    const { error } = await supabase
+      .from('leads')
+      .update({
+        faturamento_answer: data.faturamento_answer,
+        dor_answer: data.dor_answer,
+        momento_answer: data.momento_answer,
+        qualification_score: data.qualification_score,
+        qualification_tier: data.qualification_tier,
+      })
+      .eq('whatsapp', whatsappClean)
+
+    if (error) {
+      return NextResponse.json({ error: 'Erro ao atualizar lead.' }, { status: 500 })
+    }
+
+    // E-mail de notificação de qualificação
+    const notifyEmail = process.env.NOTIFY_EMAIL
+    const resendApiKey = process.env.RESEND_API_KEY
+    if (notifyEmail && resendApiKey) {
+      resend.emails.send({
+        from: process.env.RESEND_FROM_EMAIL ?? 'onboarding@resend.dev',
+        to: notifyEmail,
+        subject: `🎯 Lead qualificado: ${tierLabel} (Score ${data.qualification_score}) — LOAD+`,
+        html: `<!DOCTYPE html><html><body style="background:#0f172a;font-family:sans-serif;padding:40px">
+          <div style="max-width:480px;margin:0 auto;background:#111827;border-radius:12px;padding:32px">
+            <p style="color:#6b7280;font-size:12px;text-transform:uppercase;letter-spacing:2px;margin:0 0 8px">LOAD+ · Qualificação</p>
+            <h2 style="color:#f9fafb;margin:0 0 20px">Lead qualificado 🎯</h2>
+            <div style="display:inline-block;background:${tierColor}22;border:1px solid ${tierColor}66;color:${tierColor};font-size:13px;font-weight:700;padding:5px 16px;border-radius:999px;margin-bottom:20px">${tierLabel} · ${data.qualification_score} pontos</div>
+            <table style="width:100%;border:1px solid #1f2937;border-radius:8px;overflow:hidden">
+              <tr><td style="padding:10px 16px;color:#9ca3af;font-size:13px;border-bottom:1px solid #1f2937">Faturamento</td><td style="padding:10px 16px;color:#f3f4f6;font-size:13px;border-bottom:1px solid #1f2937">${data.faturamento_answer}</td></tr>
+              <tr><td style="padding:10px 16px;color:#9ca3af;font-size:13px;border-bottom:1px solid #1f2937">Dor</td><td style="padding:10px 16px;color:#f3f4f6;font-size:13px;border-bottom:1px solid #1f2937">${data.dor_answer}</td></tr>
+              <tr><td style="padding:10px 16px;color:#9ca3af;font-size:13px">Momento</td><td style="padding:10px 16px;color:#f3f4f6;font-size:13px">${data.momento_answer}</td></tr>
+            </table>
+          </div>
+        </body></html>`,
+      }).catch(() => {})
     }
 
     return NextResponse.json({ success: true })

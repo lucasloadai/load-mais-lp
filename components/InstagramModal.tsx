@@ -114,7 +114,7 @@ export function InstagramModal({
   const [saving, setSaving] = useState(false)
   const [avatarError, setAvatarError] = useState(false)
   const [recentPosts, setRecentPosts] = useState<InstagramPost[]>([])
-  const { loading, error, profile, score, verify, reset } = useInstagram()
+  const { loading, error, profile, verify, reset } = useInstagram()
 
   const cleanPhone = extractCleanPhone(formData.whatsapp)
   const ddd = cleanPhone.slice(0, 2)
@@ -136,7 +136,7 @@ export function InstagramModal({
   }
 
   async function handleConfirm() {
-    if (!profile || !score) return
+    if (!profile) return
     setSaving(true)
 
     try {
@@ -150,24 +150,26 @@ export function InstagramModal({
           instagram: profile.username,
           instagram_followers: profile.followers_count,
           instagram_verified: profile.is_verified,
-          lead_score: score.score,
-          lead_tier: score.tier,
           utm_source: utmSource,
           utm_medium: utmMedium,
           utm_campaign: utmCampaign,
         }),
       })
+      localStorage.setItem('loadmais_whatsapp', cleanPhone)
     } catch {
       // Non-blocking
     }
 
-    trackEvent('LeadCaptured', { tier: score.tier, score: score.score, ddd })
+    trackEvent('LeadCaptured', { ddd })
     onProfileConfirmed?.({
       username: profile.username,
       biography: profile.biography,
       followers_count: profile.followers_count,
+      following_count: profile.following_count ?? 0,
+      media_count: profile.media_count ?? 0,
       category: profile.category,
       posts: recentPosts,
+      profile_pic_url: profile.profile_pic_url ?? null,
     })
     onClose()
   }

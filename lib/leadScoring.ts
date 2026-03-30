@@ -1,72 +1,64 @@
-import type { InstagramProfile } from './instagramCheck'
+export type QualificationTier = 'FRIO' | 'MORNO' | 'QUENTE' | 'PRONTO'
 
-export type LeadTier = 'curioso' | 'potencial' | 'premium'
+export type FaturamentoAnswer = 'ate10k' | '10k-50k' | '50k-150k' | 'acima150k'
+export type DorAnswer = 'generica' | 'moderada' | 'forte' | 'critica'
+export type MomentoAnswer = 'inicial' | 'crescimento' | 'estrutura' | 'escala'
 
-export type LeadScore = {
-  score: number
-  tier: LeadTier
-  breakdown: Record<string, number>
+export interface QualificationAnswers {
+  faturamento: FaturamentoAnswer
+  dor: DorAnswer
+  momento: MomentoAnswer
 }
 
-const PROFESSIONAL_KEYWORDS = [
-  'ceo', 'founder', 'marketing', 'vendas', 'empresário', 'empresaria',
-  'negócios', 'negocios', 'consultor', 'consultora', 'gestor', 'gestora',
-  'empreendedor', 'empreendedora', 'diretor', 'diretora', 'estrategista',
-  'agência', 'agencia', 'digital', 'oficial', 'comercial',
-]
+export interface QualificationResult {
+  score: number
+  tier: QualificationTier
+  planId: 'A1' | 'A2' | 'A3' | 'A4'
+}
 
-const BUSINESS_CATEGORIES = [
-  'Advertising/Marketing', 'Consulting Agency', 'Digital creator',
-  'Business person', 'Entrepreneur', 'Brand', 'Product/service',
-  'Local business',
-]
+const FATURAMENTO_SCORE: Record<FaturamentoAnswer, number> = {
+  'ate10k':    10,
+  '10k-50k':   20,
+  '50k-150k':  30,
+  'acima150k': 40,
+}
 
-export function calculateLeadScore(profile: InstagramProfile): LeadScore {
-  const breakdown: Record<string, number> = {}
-  let score = 0
+const DOR_SCORE: Record<DorAnswer, number> = {
+  'generica':  5,
+  'moderada':  15,
+  'forte':     25,
+  'critica':   30,
+}
 
-  // Followers
-  if (profile.followers_count > 10000) {
-    breakdown['followers_10k+'] = 25
-    score += 25
-  } else if (profile.followers_count > 1000) {
-    breakdown['followers_1k+'] = 10
-    score += 10
-  }
+const MOMENTO_SCORE: Record<MomentoAnswer, number> = {
+  'inicial':     5,
+  'crescimento': 15,
+  'estrutura':   25,
+  'escala':      30,
+}
 
-  // Bio profissional
-  const bioLower = (profile.biography ?? '').toLowerCase()
-  const hasProfessionalBio = PROFESSIONAL_KEYWORDS.some((kw) =>
-    bioLower.includes(kw)
-  )
-  if (hasProfessionalBio) {
-    breakdown['bio_profissional'] = 20
-    score += 20
-  }
+export function calcularScore(answers: QualificationAnswers): QualificationResult {
+  const score =
+    FATURAMENTO_SCORE[answers.faturamento] +
+    DOR_SCORE[answers.dor] +
+    MOMENTO_SCORE[answers.momento]
 
-  // Tem site
-  if (profile.external_url) {
-    breakdown['tem_site'] = 15
-    score += 15
-  }
+  const tier: QualificationTier =
+    score >= 80 ? 'PRONTO' :
+    score >= 60 ? 'QUENTE' :
+    score >= 40 ? 'MORNO'  : 'FRIO'
 
-  // Posts > 50
-  if (profile.media_count > 50) {
-    breakdown['posts_50+'] = 15
-    score += 15
-  }
+  const planId =
+    tier === 'PRONTO' ? 'A4' :
+    tier === 'QUENTE' ? 'A3' :
+    tier === 'MORNO'  ? 'A2' : 'A1'
 
-  // Categoria business
-  const isBusiness = BUSINESS_CATEGORIES.some(
-    (cat) => profile.category?.toLowerCase().includes(cat.toLowerCase())
-  )
-  if (isBusiness) {
-    breakdown['categoria_business'] = 25
-    score += 25
-  }
+  return { score, tier, planId }
+}
 
-  const tier: LeadTier =
-    score >= 61 ? 'premium' : score >= 31 ? 'potencial' : 'curioso'
-
-  return { score, tier, breakdown }
+export const TIER_META: Record<QualificationTier, { label: string; color: string; leitura: string }> = {
+  FRIO:   { label: 'Frio',   color: '#6B7280', leitura: 'Ainda não é cliente' },
+  MORNO:  { label: 'Morno',  color: '#F59E0B', leitura: 'Precisa de educação' },
+  QUENTE: { label: 'Quente', color: '#3B82F6', leitura: 'Pode virar cliente'  },
+  PRONTO: { label: 'Pronto', color: '#10B981', leitura: 'Cliente ideal'       },
 }
