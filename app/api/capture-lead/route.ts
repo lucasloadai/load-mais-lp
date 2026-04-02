@@ -61,9 +61,9 @@ function buildEmailHtml(data: z.infer<typeof schema>): string {
     data.utm_campaign ? ['Campanha', data.utm_campaign] : null,
     ['Recebido em', now],
   ]
-    .filter(Boolean)
+    .filter((x): x is [string, string] => x !== null)
     .map(
-      ([label, value]: [string, string]) => `
+      ([label, value]) => `
       <tr>
         <td style="padding:10px 16px;color:#9ca3af;font-size:13px;white-space:nowrap;border-bottom:1px solid #1f2937">${label}</td>
         <td style="padding:10px 16px;color:#f3f4f6;font-size:13px;border-bottom:1px solid #1f2937">${value}</td>
