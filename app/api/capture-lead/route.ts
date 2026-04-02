@@ -63,7 +63,7 @@ function buildEmailHtml(data: z.infer<typeof schema>): string {
   ]
     .filter(Boolean)
     .map(
-      ([label, value]) => `
+      ([label, value]: [string, string]) => `
       <tr>
         <td style="padding:10px 16px;color:#9ca3af;font-size:13px;white-space:nowrap;border-bottom:1px solid #1f2937">${label}</td>
         <td style="padding:10px 16px;color:#f3f4f6;font-size:13px;border-bottom:1px solid #1f2937">${value}</td>
@@ -166,26 +166,114 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: 'Erro ao atualizar lead.' }, { status: 500 })
     }
 
-    // E-mail de notificação de qualificação
+    // Busca dados completos do lead para o e-mail
+    const { data: lead } = await supabase
+      .from('leads')
+      .select('nome, whatsapp, ddd, instagram, instagram_followers')
+      .eq('whatsapp', whatsappClean)
+      .single()
+
     const notifyEmail = process.env.NOTIFY_EMAIL
     const resendApiKey = process.env.RESEND_API_KEY
-    if (notifyEmail && resendApiKey) {
+    if (notifyEmail && resendApiKey && lead) {
+      const whatsappLink = `https://wa.me/55${whatsappClean}`
+      const faturamentoLabel: Record<string, string> = {
+        'ate10k': 'Até R$30k', '10k-50k': 'R$30k – R$60k',
+        '50k-150k': 'R$60k – R$120k', 'acima150k': 'Acima de R$120k',
+      }
+      const dorLabel: Record<string, string> = {
+        'generica': 'Não tenho previsibilidade de vendas',
+        'moderada': 'Não invisto em marketing e captação no momento',
+        'forte': 'Invisto em captação/tráfego, mas não fecho',
+        'critica': 'Nunca investi antes nisso',
+      }
+      const momentoLabel: Record<string, string> = {
+        'inicial': 'Estou começando',
+        'crescimento': 'Já vendo, mas sem processo',
+        'estrutura': 'Tenho vendas/tráfego, quero organizar',
+        'escala': 'Quero escalar com previsibilidade',
+      }
+
       resend.emails.send({
         from: process.env.RESEND_FROM_EMAIL ?? 'onboarding@resend.dev',
         to: notifyEmail,
-        subject: `🎯 Lead qualificado: ${tierLabel} (Score ${data.qualification_score}) — LOAD+`,
-        html: `<!DOCTYPE html><html><body style="background:#0f172a;font-family:sans-serif;padding:40px">
-          <div style="max-width:480px;margin:0 auto;background:#111827;border-radius:12px;padding:32px">
-            <p style="color:#6b7280;font-size:12px;text-transform:uppercase;letter-spacing:2px;margin:0 0 8px">LOAD+ · Qualificação</p>
-            <h2 style="color:#f9fafb;margin:0 0 20px">Lead qualificado 🎯</h2>
-            <div style="display:inline-block;background:${tierColor}22;border:1px solid ${tierColor}66;color:${tierColor};font-size:13px;font-weight:700;padding:5px 16px;border-radius:999px;margin-bottom:20px">${tierLabel} · ${data.qualification_score} pontos</div>
-            <table style="width:100%;border:1px solid #1f2937;border-radius:8px;overflow:hidden">
-              <tr><td style="padding:10px 16px;color:#9ca3af;font-size:13px;border-bottom:1px solid #1f2937">Faturamento</td><td style="padding:10px 16px;color:#f3f4f6;font-size:13px;border-bottom:1px solid #1f2937">${data.faturamento_answer}</td></tr>
-              <tr><td style="padding:10px 16px;color:#9ca3af;font-size:13px;border-bottom:1px solid #1f2937">Dor</td><td style="padding:10px 16px;color:#f3f4f6;font-size:13px;border-bottom:1px solid #1f2937">${data.dor_answer}</td></tr>
-              <tr><td style="padding:10px 16px;color:#9ca3af;font-size:13px">Momento</td><td style="padding:10px 16px;color:#f3f4f6;font-size:13px">${data.momento_answer}</td></tr>
-            </table>
-          </div>
-        </body></html>`,
+        subject: `🎯 ${lead.nome} se qualificou — ${tierLabel} — LOAD+`,
+        html: `<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#0f172a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0f172a;padding:40px 16px">
+    <tr><td align="center">
+      <table width="100%" cellpadding="0" cellspacing="0" style="max-width:520px">
+
+        <tr><td style="background:linear-gradient(135deg,#FF6B00,#1A6BFF);border-radius:12px 12px 0 0;padding:3px 0"></td></tr>
+        <tr><td style="background:#111827;padding:28px 32px 16px">
+          <p style="margin:0 0 4px;font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:2px;font-weight:700">LOAD+ · Lead Qualificado</p>
+          <h1 style="margin:0;font-size:22px;font-weight:800;color:#f9fafb">${lead.nome} 🎯</h1>
+        </td></tr>
+
+        <!-- Badge tier -->
+        <tr><td style="background:#111827;padding:0 32px 20px">
+          <span style="display:inline-block;background:${tierColor}22;border:1px solid ${tierColor}66;color:${tierColor};font-size:13px;font-weight:700;padding:5px 16px;border-radius:999px">
+            ${tierLabel} · ${data.qualification_score} pontos
+          </span>
+        </td></tr>
+
+        <!-- Dados do lead -->
+        <tr><td style="background:#111827;padding:0 32px 16px">
+          <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #1f2937;border-radius:10px;overflow:hidden">
+            <tr>
+              <td style="padding:10px 16px;color:#9ca3af;font-size:13px;border-bottom:1px solid #1f2937">WhatsApp</td>
+              <td style="padding:10px 16px;color:#f3f4f6;font-size:13px;border-bottom:1px solid #1f2937">
+                <a href="${whatsappLink}" style="color:#1A6BFF">${lead.whatsapp}</a>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:10px 16px;color:#9ca3af;font-size:13px;border-bottom:1px solid #1f2937">DDD</td>
+              <td style="padding:10px 16px;color:#f3f4f6;font-size:13px;border-bottom:1px solid #1f2937">${lead.ddd}</td>
+            </tr>
+            ${lead.instagram ? `<tr>
+              <td style="padding:10px 16px;color:#9ca3af;font-size:13px;border-bottom:1px solid #1f2937">Instagram</td>
+              <td style="padding:10px 16px;color:#f3f4f6;font-size:13px;border-bottom:1px solid #1f2937">@${lead.instagram}${lead.instagram_followers ? ` · ${lead.instagram_followers.toLocaleString('pt-BR')} seguidores` : ''}</td>
+            </tr>` : ''}
+          </table>
+        </td></tr>
+
+        <!-- Qualificação -->
+        <tr><td style="background:#111827;padding:0 32px 24px">
+          <p style="margin:0 0 10px;font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:1.5px;font-weight:700">Respostas do diagnóstico</p>
+          <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #1f2937;border-radius:10px;overflow:hidden">
+            <tr>
+              <td style="padding:10px 16px;color:#9ca3af;font-size:13px;border-bottom:1px solid #1f2937;white-space:nowrap">Faturamento</td>
+              <td style="padding:10px 16px;color:#f3f4f6;font-size:13px;border-bottom:1px solid #1f2937">${faturamentoLabel[data.faturamento_answer] ?? data.faturamento_answer}</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 16px;color:#9ca3af;font-size:13px;border-bottom:1px solid #1f2937;white-space:nowrap">Desafio</td>
+              <td style="padding:10px 16px;color:#f3f4f6;font-size:13px;border-bottom:1px solid #1f2937">${dorLabel[data.dor_answer] ?? data.dor_answer}</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 16px;color:#9ca3af;font-size:13px;white-space:nowrap">Momento</td>
+              <td style="padding:10px 16px;color:#f3f4f6;font-size:13px">${momentoLabel[data.momento_answer] ?? data.momento_answer}</td>
+            </tr>
+          </table>
+        </td></tr>
+
+        <!-- CTA WhatsApp -->
+        <tr><td style="background:#111827;padding:0 32px 32px;border-radius:0 0 12px 12px">
+          <a href="${whatsappLink}" style="display:block;text-align:center;background:#16a34a;color:#fff;font-weight:700;font-size:14px;padding:14px;border-radius:10px;text-decoration:none">
+            💬 Abrir conversa no WhatsApp
+          </a>
+        </td></tr>
+
+        <tr><td style="padding:20px 0 0;text-align:center">
+          <p style="margin:0;color:#374151;font-size:11px">LOAD+ · Notificação automática de qualificação</p>
+        </td></tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`,
       }).catch(() => {})
     }
 

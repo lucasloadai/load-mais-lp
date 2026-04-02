@@ -17,8 +17,11 @@ type InstagramProfileSnapshot = {
   username: string
   biography: string
   followers_count: number
+  following_count: number
+  media_count: number
   category: string | null
   posts: InstagramPost[]
+  profile_pic_url: string | null
 }
 
 type Props = {
