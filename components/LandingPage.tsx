@@ -8,6 +8,8 @@ import { useEffect, useRef, useState } from 'react'
 import { EntryModal } from './EntryModal'
 import { AgendarModal } from './AgendarModal'
 import { CountUp } from './CountUp'
+import QualificationForm from './QualificationForm'
+import { TIER_META, type QualificationResult, type QualificationAnswers } from '@/lib/leadScoring'
 
 const heroPhrases = ['da sua presença.', 'exclusivamente de você.', 'de improviso.']
 
@@ -218,11 +220,16 @@ export function LandingPage() {
     username: string
     biography: string
     followers_count: number
+    following_count: number
+    media_count: number
     category: string | null
     posts: { caption: string; likes: number; comments: number }[]
+    profile_pic_url: string | null
   } | null>(null)
   const [generatedCopy, setGeneratedCopy] = useState<string | null>(null)
   const [recommendedPlan, setRecommendedPlan] = useState<string | null>(null)
+  const [qualification, setQualification] = useState<{ result: QualificationResult; answers: QualificationAnswers } | null>(null)
+  const [qualificationDone, setQualificationDone] = useState(false)
 
   const firstName = leadName ? leadName.split(' ')[0] : ''
 
@@ -407,9 +414,79 @@ export function LandingPage() {
             </span>
           </h1>
           <p className="text-base md:text-lg text-white/55 max-w-xl mx-auto leading-relaxed">
-            A LOAD+ soma inteligência no seu marketing, vendas e processos gerando previsibilidade e resultado real na prática.
+            A LOAD+ soma inteligência no seu negócio gerando previsibilidade e resultado real na prática.
           </p>
         </div>
+
+        {/* ── Apresentação inteligente (aparece após Instagram) ── */}
+        {instagramProfile && generatedCopy && (
+          <div className="relative z-10 w-full max-w-2xl mb-8">
+            <div className="relative rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-sm overflow-hidden">
+              {/* Glow sutil */}
+              <div className="absolute inset-0 bg-gradient-to-br from-[#1A6BFF]/5 to-transparent pointer-events-none" />
+
+              {/* Header */}
+              <div className="flex items-center gap-1.5 px-5 pt-4 pb-3 border-b border-white/[0.06]">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#1A6BFF" strokeWidth={1.5} className="w-3.5 h-3.5 shrink-0">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
+                </svg>
+                <span className="text-[0.6rem] font-bold uppercase tracking-[1.5px] text-[#1A6BFF]/70">Apresentação inteligente</span>
+              </div>
+
+              {/* Conteúdo */}
+              <div className="flex gap-5 px-5 py-4 items-start">
+
+                {/* Foto + stats */}
+                {instagramProfile.profile_pic_url && (
+                  <div className="flex-shrink-0 flex flex-col items-center gap-3">
+                    <div className="w-14 h-14 rounded-2xl overflow-hidden border border-white/15 shadow-[0_0_24px_rgba(26,107,255,0.2)]">
+                      <img src={instagramProfile.profile_pic_url} alt={instagramProfile.username} className="w-full h-full object-cover" />
+                    </div>
+                    {/* Big numbers */}
+                    <div className="flex gap-3 text-center">
+                      <div>
+                        <p className="text-white font-black text-sm leading-none">
+                          {instagramProfile.followers_count >= 1000
+                            ? `${(instagramProfile.followers_count / 1000).toFixed(1).replace('.0', '')}k`
+                            : instagramProfile.followers_count}
+                        </p>
+                        <p className="text-white/30 text-[0.55rem] uppercase tracking-wide mt-0.5">seguidores</p>
+                      </div>
+                      <div className="w-px bg-white/10" />
+                      <div>
+                        <p className="text-white font-black text-sm leading-none">
+                          {instagramProfile.following_count >= 1000
+                            ? `${(instagramProfile.following_count / 1000).toFixed(1).replace('.0', '')}k`
+                            : instagramProfile.following_count}
+                        </p>
+                        <p className="text-white/30 text-[0.55rem] uppercase tracking-wide mt-0.5">seguindo</p>
+                      </div>
+                      <div className="w-px bg-white/10" />
+                      <div>
+                        <p className="text-white font-black text-sm leading-none">{instagramProfile.media_count}</p>
+                        <p className="text-white/30 text-[0.55rem] uppercase tracking-wide mt-0.5">posts</p>
+                      </div>
+                    </div>
+                    <p className="text-white/25 text-[0.6rem]">@{instagramProfile.username}</p>
+                  </div>
+                )}
+
+                {/* Divisor */}
+                <div className="w-px self-stretch bg-white/[0.06] flex-shrink-0" />
+
+                {/* Copy */}
+                <div className="flex-1 min-w-0">
+                  {instagramProfile.category && (
+                    <p className="text-[#1A6BFF]/60 text-[0.6rem] font-bold uppercase tracking-widest mb-2">{instagramProfile.category}</p>
+                  )}
+                  <p className="text-white/75 text-sm leading-relaxed">
+                    <span className="text-[#FF6B00] font-bold">{firstName}</span>, {generatedCopy}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="relative z-10 flex flex-col sm:flex-row gap-3 mb-16 justify-center">
           <button
@@ -585,56 +662,42 @@ export function LandingPage() {
               Cada proposta representa um nível de maturidade do seu sistema comercial.
             </p>
 
-            {/* Bloco personalizado pós-Instagram */}
-            {instagramProfile && firstName && (
-              <div className="mt-8 mx-auto max-w-2xl">
-                <div className="relative rounded-2xl border border-[#1A6BFF]/30 bg-[#1A6BFF]/[0.06] px-6 py-5 text-left overflow-hidden">
-                  <div className="absolute top-0 right-0 w-40 h-40 bg-[#1A6BFF]/10 rounded-full blur-[50px] pointer-events-none" />
+            {/* espaço reservado — bloco de análise foi movido para o Hero */}
 
-                  {/* Header */}
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="#1A6BFF" strokeWidth={1.5} className="w-4 h-4 shrink-0">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
-                      </svg>
-                      <span className="text-[0.65rem] font-bold uppercase tracking-[1.5px] text-[#1A6BFF]/80">
-                        Análise do seu perfil
-                      </span>
-                    </div>
-                    <span className="text-[0.65rem] text-white/30 font-medium">
-                      @{instagramProfile.username}
-                      {instagramProfile.followers_count > 0 && (
-                        <> · {instagramProfile.followers_count >= 1000
-                          ? `${(instagramProfile.followers_count / 1000).toFixed(1).replace('.0', '')}k`
-                          : instagramProfile.followers_count} seguidores</>
-                      )}
-                    </span>
-                  </div>
+            {/* Form de qualificação — aparece antes dos planos */}
+            {!qualificationDone && (
+              <QualificationForm
+                onComplete={(result, answers) => {
+                  setQualification({ result, answers })
+                  setRecommendedPlan(result.planId)
+                  setQualificationDone(true)
+                  // Salvar no Supabase via capture-lead update
+                  fetch('/api/capture-lead', {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      whatsapp: localStorage.getItem('loadmais_whatsapp') ?? '',
+                      faturamento_answer: answers.faturamento,
+                      dor_answer: answers.dor,
+                      momento_answer: answers.momento,
+                      qualification_score: result.score,
+                      qualification_tier: result.tier,
+                    }),
+                  }).catch(() => {})
+                }}
+              />
+            )}
 
-                  {/* Copy gerada por IA ou fallback */}
-                  <p className="text-white/80 text-sm leading-relaxed relative z-10">
-                    {generatedCopy ? (
-                      <>
-                        <span className="text-[#FF6B00] font-bold">{firstName}</span>, {generatedCopy}{' '}
-                        <span className="text-white/50">A proposta ideal para o seu momento está logo abaixo.</span>
-                      </>
-                    ) : (
-                      <>
-                        <span className="text-[#FF6B00] font-bold">{firstName}</span>, analisamos seu perfil
-                        {instagramProfile.category && <> em <span className="font-semibold">{instagramProfile.category}</span></>}
-                        . Com o que vemos, seu negócio está pronto para estruturar um sistema comercial real.{' '}
-                        <span className="text-white/50">A proposta ideal para o seu momento está logo abaixo.</span>
-                      </>
-                    )}
+            {/* Resultado da qualificação */}
+            {qualificationDone && qualification && (
+              <div className="mt-6 mx-auto max-w-2xl">
+                <div className="rounded-xl border border-[#FF6B00]/30 bg-[#FF6B00]/[0.05] px-5 py-4 text-left">
+                  <p className="text-[0.55rem] font-black uppercase tracking-[1.8px] text-[#FF6B00]/60 mb-2">
+                    Recomendação personalizada conforme seu nível de maturidade digital
                   </p>
-                  {recommendedPlan && (
-                    <div className="mt-4 flex items-center gap-2">
-                      <span className="text-[0.65rem] text-white/30 uppercase tracking-widest">Proposta recomendada para você</span>
-                      <span className="text-[0.65rem] font-extrabold text-[#FF6B00] bg-[#FF6B00]/10 border border-[#FF6B00]/30 rounded-full px-2.5 py-0.5">
-                        {plans.find(p => p.id === recommendedPlan)?.name ?? recommendedPlan}
-                      </span>
-                    </div>
-                  )}
+                  <p className="text-white font-black text-lg">
+                    {plans.find(p => p.id === qualification.result.planId)?.name ?? qualification.result.planId}
+                  </p>
                 </div>
               </div>
             )}
