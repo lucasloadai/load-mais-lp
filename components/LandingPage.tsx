@@ -295,6 +295,11 @@ export function LandingPage() {
       setLeadName(trimmed)
       localStorage.setItem('loadmais_nome', trimmed)
       setShowEntryModal(false)
+      // Reseta dados do usuário anterior
+      setInstagramProfile(null)
+      setGeneratedCopy(null)
+      setQualification(null)
+      setQualificationDone(false)
     }
     originalOnSubmit(e)
   }
