@@ -183,7 +183,7 @@ export function InstagramModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
 
-      <div className="relative z-10 w-full max-w-md bg-[#0C1524] border border-white/10 rounded-2xl p-6 md:p-8 shadow-2xl">
+      <div className="relative z-10 w-full max-w-sm sm:max-w-md bg-[#0C1524] border border-white/10 rounded-2xl px-5 py-5 sm:px-6 sm:py-6 shadow-2xl">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-white/30 hover:text-white/70 transition"

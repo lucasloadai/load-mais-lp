@@ -124,7 +124,7 @@ export function EntryModal({ form, dddMessage, dddEmoji, handlePhoneChange, onSu
           {/* Barra topo */}
           <div className="h-[3px] w-full bg-gradient-to-r from-[#FF6B00] via-[#FF8C00] to-[#1A6BFF]" />
 
-          <div className="px-7 pt-7 pb-6">
+          <div className="px-5 pt-6 pb-5 sm:px-7 sm:pt-7 sm:pb-6">
             {/* Badge */}
             <div className="inline-flex items-center gap-2 text-[0.68rem] font-extrabold uppercase tracking-[1.5px] text-[#FF6B00] px-3 py-1 rounded-full border border-[#FF6B00]/40 bg-[#FF6B00]/[0.08] mb-5">
               <span className="font-black text-sm leading-none">+</span>
@@ -132,7 +132,7 @@ export function EntryModal({ form, dddMessage, dddEmoji, handlePhoneChange, onSu
             </div>
 
             {/* Saudação */}
-            <h2 className="text-2xl font-extrabold leading-tight tracking-tight mb-1">
+            <h2 className="text-xl sm:text-2xl font-extrabold leading-tight tracking-tight mb-1">
               Opaa,{' '}
               <span className="text-[#FF6B00]">{greeting.text}!</span>{' '}
               <span>{greeting.emoji}</span>
@@ -140,16 +140,16 @@ export function EntryModal({ form, dddMessage, dddEmoji, handlePhoneChange, onSu
 
             {/* Contexto de dispositivo + dia/hora */}
             {device && (
-              <div className="flex items-start gap-2.5 bg-white/[0.04] border border-white/[0.07] rounded-xl px-4 py-3 mb-5">
+              <div className="flex items-start gap-2.5 bg-white/[0.04] border border-white/[0.07] rounded-xl px-3 py-2.5 sm:px-4 sm:py-3 mb-5">
                 <span className="text-[#FF6B00] mt-0.5 shrink-0">{device.icon}</span>
-                <p className="text-[0.8rem] text-white/55 leading-relaxed">
+                <p className="text-[0.75rem] sm:text-[0.8rem] text-white/55 leading-relaxed">
                   {getContextMessage(device.label)}
                 </p>
               </div>
             )}
 
             {/* Destaque */}
-            <div className="bg-white/[0.06] border border-white/[0.1] rounded-xl px-4 py-3 mb-5 flex items-center gap-3">
+            <div className="bg-white/[0.06] border border-white/[0.1] rounded-xl px-3 py-2.5 sm:px-4 sm:py-3 mb-5 flex items-center gap-3">
               <div className="flex items-center gap-1.5 shrink-0">
                 {/* Robô */}
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-5 h-5 text-[#1A6BFF]">
@@ -163,7 +163,7 @@ export function EntryModal({ form, dddMessage, dddEmoji, handlePhoneChange, onSu
                   <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
                 </svg>
               </div>
-              <p className="text-[0.82rem] text-white/80 leading-relaxed font-medium">
+              <p className="text-[0.78rem] sm:text-[0.82rem] text-white/80 leading-relaxed font-medium">
                 Agora só falta você se apresentar — quero te mostrar muito mais dessa mágica! ✨
               </p>
             </div>
@@ -177,7 +177,7 @@ export function EntryModal({ form, dddMessage, dddEmoji, handlePhoneChange, onSu
             />
           </div>
 
-          <div className="px-7 pb-5 text-center">
+          <div className="px-5 pb-4 sm:px-7 sm:pb-5 text-center">
             <p className="text-white/20 text-xs">🔒 Dados protegidos. Sem spam.</p>
           </div>
         </div>
