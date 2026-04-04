@@ -350,7 +350,7 @@ export function LandingPage() {
               LOAD<span className="text-[#1A6BFF]">+</span>
             </div>
             {firstName && (
-              <span className="hidden sm:inline-flex items-center gap-1.5 text-xs text-white/50 bg-white/[0.05] border border-white/[0.08] px-3 py-1 rounded-full">
+              <span className="inline-flex items-center gap-1.5 text-[0.7rem] sm:text-xs text-white/50 bg-white/[0.05] border border-white/[0.08] px-2 sm:px-3 py-1 rounded-full">
                 Olá, <span className="text-[#FF6B00] font-semibold">{firstName}</span> 👋
               </span>
             )}
@@ -359,7 +359,7 @@ export function LandingPage() {
             onClick={scrollToForm}
             className="flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 bg-[#1A6BFF] hover:bg-[#1557D4] text-white font-semibold text-xs sm:text-sm rounded-lg transition-all duration-200 shadow-[0_4px_14px_rgba(26,107,255,0.35)]"
           >
-            <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 shrink-0">
+            <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0">
               <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
             </svg>
             Quero construir
@@ -388,14 +388,14 @@ export function LandingPage() {
       </div>
 
       {/* ── HERO ────────────────────────────────────────────── */}
-      <section className="relative flex flex-col items-center justify-center px-5 pt-20 pb-24 text-center overflow-hidden">
+      <section className="relative flex flex-col items-center justify-center px-4 sm:px-5 pt-12 pb-14 sm:pt-20 sm:pb-24 text-center overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-[#1A6BFF]/[0.09] rounded-full blur-[120px]" />
         </div>
 
 
-        <div className="relative z-10 max-w-4xl mb-7">
-          <h1 className="text-5xl md:text-[clamp(1.8rem,5.5vw,3.8rem)] font-extrabold leading-[1.08] tracking-[-1.8px] mb-6">
+        <div className="relative z-10 max-w-4xl mb-5 sm:mb-7">
+          <h1 className="text-[1.85rem] sm:text-4xl md:text-5xl lg:text-[3.6rem] font-extrabold leading-[1.1] tracking-[-0.5px] sm:tracking-[-1.8px] mb-4 sm:mb-6">
             Construa um sistema previsível de geração de receita —{' '}
             <br className="hidden md:block" />
             {firstName && (
@@ -407,7 +407,6 @@ export function LandingPage() {
               </span>
             )}
             sem depender{' '}
-            <br />
             <span
               className="text-[#1A6BFF] inline-block transition-all duration-300 ease-in-out"
               style={{
@@ -418,7 +417,7 @@ export function LandingPage() {
               {heroPhrases[phraseIdx]}
             </span>
           </h1>
-          <p className="text-base md:text-lg text-white/55 max-w-xl mx-auto leading-relaxed">
+          <p className="text-sm sm:text-base md:text-lg text-white/55 max-w-xl mx-auto leading-relaxed">
             A LOAD+ soma inteligência no seu negócio gerando previsibilidade e resultado real na prática.
           </p>
         </div>
@@ -431,7 +430,7 @@ export function LandingPage() {
               <div className="absolute inset-0 bg-gradient-to-br from-[#1A6BFF]/5 to-transparent pointer-events-none" />
 
               {/* Header */}
-              <div className="flex items-center gap-1.5 px-5 pt-4 pb-3 border-b border-white/[0.06]">
+              <div className="flex items-center gap-1.5 px-4 pt-3.5 pb-3 border-b border-white/[0.06]">
                 <svg viewBox="0 0 24 24" fill="none" stroke="#1A6BFF" strokeWidth={1.5} className="w-3.5 h-3.5 shrink-0">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
                 </svg>
@@ -439,11 +438,11 @@ export function LandingPage() {
               </div>
 
               {/* Conteúdo */}
-              <div className="flex gap-5 px-5 py-4 items-start">
+              <div className="flex flex-col sm:flex-row gap-0 px-4 py-4 items-center sm:items-start">
 
                 {/* Foto + stats */}
                 {instagramProfile.profile_pic_url && (
-                  <div className="flex-shrink-0 flex flex-col items-center gap-3">
+                  <div className="flex flex-col items-center gap-3 mb-4 sm:mb-0 sm:flex-shrink-0">
                     <div className="w-14 h-14 rounded-2xl overflow-hidden border border-white/15 shadow-[0_0_24px_rgba(26,107,255,0.2)]">
                       <img src={instagramProfile.profile_pic_url} alt={instagramProfile.username} className="w-full h-full object-cover" />
                     </div>
@@ -477,10 +476,10 @@ export function LandingPage() {
                 )}
 
                 {/* Divisor */}
-                <div className="w-px self-stretch bg-white/[0.06] flex-shrink-0" />
+                <div className="w-full sm:w-px h-px sm:h-auto self-stretch bg-white/[0.06] flex-shrink-0 sm:mx-1" />
 
                 {/* Copy */}
-                <div className="flex-1 min-w-0">
+                <div className="flex-1 min-w-0 text-center sm:text-left">
                   {instagramProfile.category && (
                     <p className="text-[#1A6BFF]/60 text-[0.6rem] font-bold uppercase tracking-widest mb-2">{instagramProfile.category}</p>
                   )}
@@ -493,10 +492,10 @@ export function LandingPage() {
           </div>
         )}
 
-        <div className="relative z-10 flex flex-col sm:flex-row gap-3 mb-16 justify-center">
+        <div className="relative z-10 flex flex-col sm:flex-row gap-3 mb-10 sm:mb-16 w-full sm:w-auto justify-center">
           <button
             onClick={scrollToForm}
-            className="flex items-center justify-center gap-2 px-7 py-3.5 bg-[#1A6BFF] hover:bg-[#1557D4] text-white font-semibold text-sm rounded-xl transition-all duration-200 shadow-[0_4px_20px_rgba(26,107,255,0.35)] hover:shadow-[0_6px_24px_rgba(26,107,255,0.45)] hover:-translate-y-0.5"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-7 py-3.5 bg-[#1A6BFF] hover:bg-[#1557D4] text-white font-semibold text-sm rounded-xl transition-all duration-200 shadow-[0_4px_20px_rgba(26,107,255,0.35)] hover:shadow-[0_6px_24px_rgba(26,107,255,0.45)] hover:-translate-y-0.5"
           >
             <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 shrink-0">
               <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
@@ -505,45 +504,44 @@ export function LandingPage() {
           </button>
           <button
             onClick={scrollToPlans}
-            className="flex items-center justify-center gap-2 px-7 py-3.5 border border-white/[0.12] hover:border-white/25 text-white/70 hover:text-white font-semibold text-sm rounded-xl transition-all duration-200 hover:bg-white/[0.04]"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-7 py-3.5 border border-white/[0.12] hover:border-white/25 text-white/70 hover:text-white font-semibold text-sm rounded-xl transition-all duration-200 hover:bg-white/[0.04]"
           >
             Ver propostas
           </button>
         </div>
 
         {/* Stats */}
-        <div className="relative z-10 flex items-center divide-x divide-white/[0.08] border border-white/[0.08] rounded-2xl bg-white/[0.03] overflow-hidden">
+        <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 bg-white/[0.06] border border-white/[0.08] rounded-2xl overflow-hidden gap-px w-full max-w-xs sm:max-w-none sm:w-auto">
           {stats.map((s) => (
-            <div key={s.label} className="flex flex-col items-center gap-0.5 px-8 py-5">
-              <span className="text-2xl md:text-3xl font-extrabold text-[#1A6BFF]">
+            <div key={s.label} className="flex flex-col items-center gap-0.5 px-4 sm:px-8 py-4 sm:py-5 bg-[#080E18]">
+              <span className="text-xl sm:text-2xl md:text-3xl font-extrabold text-[#1A6BFF]">
                 <CountUp value={s.value} />
               </span>
-              <span className="text-[0.7rem] text-white/40 text-center leading-tight max-w-[80px]">{s.label}</span>
+              <span className="text-[0.65rem] sm:text-[0.7rem] text-white/40 text-center leading-tight max-w-[80px]">{s.label}</span>
             </div>
           ))}
         </div>
       </section>
 
       {/* ── PROBLEMA ────────────────────────────────────────── */}
-      <section className="px-5 py-24 max-w-6xl mx-auto">
-        <div data-reveal className="text-center mb-14">
-          <div className="inline-flex items-center gap-2 text-[0.72rem] font-extrabold uppercase tracking-[1.5px] text-[#FF6B00] mb-5 px-4 py-1.5 rounded-full border border-[#FF6B00]/40 bg-[#FF6B00]/[0.08] shadow-[0_0_14px_rgba(255,107,0,0.15)]">
+      <section className="px-4 sm:px-5 py-14 md:py-24 max-w-6xl mx-auto">
+        <div data-reveal className="text-center mb-10 md:mb-14">
+          <div className="inline-flex items-center gap-2 text-[0.72rem] font-extrabold uppercase tracking-[1.5px] text-[#FF6B00] mb-4 sm:mb-5 px-4 py-1.5 rounded-full border border-[#FF6B00]/40 bg-[#FF6B00]/[0.08] shadow-[0_0_14px_rgba(255,107,0,0.15)]">
             <span className="text-[#FF6B00] font-black text-sm leading-none">+</span>
             Por que sua empresa trava
           </div>
-          <h2 className="text-4xl md:text-5xl font-extrabold leading-tight">
-            Se seu crescimento não é previsível,
-            <br />ele não é <span className="text-[#1A6BFF]">escalável.</span>
+          <h2 className="text-[1.6rem] sm:text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight">
+            Se seu crescimento não é previsível, ele não é <span className="text-[#1A6BFF]">escalável.</span>
           </h2>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-4">
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
           {problems.map((p, idx) => (
             <div
               key={p.title}
               data-reveal
               data-delay={idx * 120}
-              className="p-7 rounded-2xl border border-white/[0.07] bg-white/[0.025] hover:border-[#FF6B00]/40 hover:bg-[#FF6B00]/[0.03] hover:-translate-y-2 hover:shadow-[0_12px_40px_rgba(255,107,0,0.12)] transition-all duration-300 group"
+              className="p-5 sm:p-7 rounded-2xl border border-white/[0.07] bg-white/[0.025] hover:border-[#FF6B00]/40 hover:bg-[#FF6B00]/[0.03] hover:-translate-y-2 hover:shadow-[0_12px_40px_rgba(255,107,0,0.12)] transition-all duration-300 group"
             >
               <div className="w-10 h-10 rounded-xl bg-[#1A6BFF]/10 border border-[#1A6BFF]/25 flex items-center justify-center text-[#1A6BFF] mb-5 group-hover:bg-[#FF6B00]/15 group-hover:border-[#FF6B00]/35 group-hover:text-[#FF6B00] group-hover:shadow-[0_0_16px_rgba(255,107,0,0.2)] transition-all duration-300">
                 {p.icon}
@@ -556,23 +554,22 @@ export function LandingPage() {
       </section>
 
       {/* ── SOLUÇÃO ─────────────────────────────────────────── */}
-      <section className="px-5 py-24 bg-gradient-to-b from-transparent via-[#0D1830]/50 to-transparent">
+      <section className="px-4 sm:px-5 py-14 md:py-24 bg-gradient-to-b from-transparent via-[#0D1830]/50 to-transparent">
         <div className="max-w-6xl mx-auto">
-          <div data-reveal className="text-center mb-12">
+          <div data-reveal className="text-center mb-10 md:mb-12">
             <div className="inline-flex items-center gap-2 text-[0.72rem] font-extrabold uppercase tracking-[1.5px] text-[#FF6B00] mb-5 px-4 py-1.5 rounded-full border border-[#FF6B00]/40 bg-[#FF6B00]/[0.08] shadow-[0_0_14px_rgba(255,107,0,0.15)]">
               <span className="text-[#FF6B00] font-black text-sm leading-none">+</span>
               O que entregamos
             </div>
-            <h2 className="text-4xl md:text-[2.75rem] font-extrabold leading-tight mb-4">
-              Não entregamos marketing.
-              <br />Estruturamos um <span className="text-[#1A6BFF]">sistema comercial inteligente.</span>
+            <h2 className="text-[1.6rem] sm:text-3xl md:text-4xl font-extrabold leading-tight mb-4">
+              Não entregamos marketing. Estruturamos um <span className="text-[#1A6BFF]">sistema comercial inteligente.</span>
             </h2>
             <p className="text-white/50 leading-relaxed text-sm max-w-lg mx-auto">
               Conectamos aquisição, vendas e dados para gerar crescimento previsível.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-12 items-start">
+          <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-start">
             {/* Checklist com linha conectora */}
             <ul className="relative">
               <div className="absolute left-[9px] top-3 bottom-3 w-px bg-gradient-to-b from-[#1A6BFF]/60 via-[#1A6BFF]/30 to-transparent" />
@@ -621,24 +618,24 @@ export function LandingPage() {
       </section>
 
       {/* ── COMO FUNCIONA ───────────────────────────────────── */}
-      <section className="px-5 py-24 max-w-6xl mx-auto">
-        <div data-reveal className="text-center mb-14">
+      <section className="px-4 sm:px-5 py-14 md:py-24 max-w-6xl mx-auto">
+        <div data-reveal className="text-center mb-10 md:mb-14">
           <div className="inline-flex items-center gap-2 text-[0.72rem] font-extrabold uppercase tracking-[1.5px] text-[#FF6B00] mb-5 px-4 py-1.5 rounded-full border border-[#FF6B00]/40 bg-[#FF6B00]/[0.08] shadow-[0_0_14px_rgba(255,107,0,0.15)]">
             <span className="text-[#FF6B00] font-black text-sm leading-none">+</span>
             O fluxo básico
           </div>
-          <h2 className="text-4xl md:text-5xl font-extrabold">
+          <h2 className="text-[1.6rem] sm:text-3xl md:text-4xl lg:text-5xl font-extrabold">
             Como estruturamos sua <span className="text-[#1A6BFF]">máquina de crescimento</span>
           </h2>
         </div>
 
-        <div className="grid md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           {steps.map((s, i) => (
             <div key={s.num} data-reveal data-delay={i * 100} className="relative">
               {i < steps.length - 1 && (
                 <div className="hidden md:block absolute top-[2.25rem] left-[62%] w-full h-px bg-gradient-to-r from-[#1A6BFF]/35 to-transparent z-10" />
               )}
-              <div className="p-6 rounded-2xl border border-white/[0.07] bg-white/[0.025] hover:border-[#1A6BFF]/40 hover:-translate-y-2 hover:shadow-[0_12px_32px_rgba(26,107,255,0.15)] transition-all duration-300 h-full group">
+              <div className="p-4 sm:p-6 rounded-2xl border border-white/[0.07] bg-white/[0.025] hover:border-[#1A6BFF]/40 hover:-translate-y-2 hover:shadow-[0_12px_32px_rgba(26,107,255,0.15)] transition-all duration-300 h-full group">
                 <div className="w-11 h-11 rounded-xl bg-[#1A6BFF]/12 border border-[#1A6BFF]/25 flex items-center justify-center text-[#1A6BFF] mb-5 group-hover:bg-[#1A6BFF]/20 group-hover:shadow-[0_0_16px_rgba(26,107,255,0.3)] transition-all duration-300">
                   {s.icon}
                 </div>
@@ -652,16 +649,15 @@ export function LandingPage() {
       </section>
 
       {/* ── ESCADA DE PROPOSTAS ──────────────────────────────── */}
-      <section ref={plansRef} className="px-5 py-24 bg-gradient-to-b from-transparent via-[#0D1830]/50 to-transparent">
+      <section ref={plansRef} className="px-4 sm:px-5 py-14 md:py-24 bg-gradient-to-b from-transparent via-[#0D1830]/50 to-transparent">
         <div className="max-w-6xl mx-auto">
-          <div data-reveal className="text-center mb-14">
+          <div data-reveal className="text-center mb-10 md:mb-14">
             <div className="inline-flex items-center gap-2 text-[0.72rem] font-extrabold uppercase tracking-[1.5px] text-[#FF6B00] mb-5 px-4 py-1.5 rounded-full border border-[#FF6B00]/40 bg-[#FF6B00]/[0.08] shadow-[0_0_14px_rgba(255,107,0,0.15)]">
               <span className="text-[#FF6B00] font-black text-sm leading-none">+</span>
               Escada de maturidade
             </div>
-            <h2 className="text-4xl md:text-5xl font-extrabold leading-tight">
-              O nível de estrutura define
-              <br />o nível do seu <span className="text-[#1A6BFF]">crescimento.</span>
+            <h2 className="text-[1.6rem] sm:text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight">
+              O nível de estrutura define o nível do seu <span className="text-[#1A6BFF]">crescimento.</span>
             </h2>
             <p className="text-white/45 text-sm mt-4 max-w-md mx-auto leading-relaxed">
               Cada proposta representa um nível de maturidade do seu sistema comercial.
@@ -708,7 +704,8 @@ export function LandingPage() {
             )}
           </div>
 
-          <div className="grid md:grid-cols-4 gap-4">
+          <div className="-mx-4 sm:mx-0">
+            <div className="flex gap-4 overflow-x-auto pb-4 px-4 sm:px-0 snap-x snap-mandatory md:grid md:grid-cols-4 md:overflow-visible md:pb-0">
             {plans.map((plan, idx) => {
               const isRecommended = recommendedPlan === plan.id
               const isHighlighted = isRecommended || plan.highlight
@@ -717,7 +714,7 @@ export function LandingPage() {
                 key={plan.id}
                 data-reveal
                 data-delay={idx * 100}
-                className={`relative rounded-[18px] p-6 flex flex-col transition-all duration-300 hover:-translate-y-2 ${
+                className={`snap-start flex-shrink-0 w-[80vw] sm:w-72 md:w-auto relative rounded-[18px] p-5 sm:p-6 flex flex-col transition-all duration-300 hover:-translate-y-2 ${
                   isRecommended
                     ? 'bg-[#0D1A30] border-[1.5px] border-[#FF6B00]/70 shadow-[0_8px_40px_rgba(255,107,0,0.22)] hover:shadow-[0_16px_48px_rgba(255,107,0,0.32)]'
                     : isHighlighted
@@ -790,29 +787,29 @@ export function LandingPage() {
               </div>
               )
             })}
+            </div>
           </div>
         </div>
       </section>
 
       {/* ── QUALIFICAÇÃO ────────────────────────────────────── */}
-      <section className="px-5 py-24">
+      <section className="px-4 sm:px-5 py-14 md:py-24">
         <div className="max-w-5xl mx-auto">
-          <div data-reveal className="text-center mb-14">
+          <div data-reveal className="text-center mb-10 md:mb-14">
             <div className="inline-flex items-center gap-2 text-[0.72rem] font-extrabold uppercase tracking-[1.5px] text-[#FF6B00] mb-5 px-4 py-1.5 rounded-full border border-[#FF6B00]/40 bg-[#FF6B00]/[0.08] shadow-[0_0_14px_rgba(255,107,0,0.15)]">
               <span className="text-[#FF6B00] font-black text-sm leading-none">+</span>
               Qualificação
             </div>
-            <h2 className="text-4xl md:text-5xl font-extrabold leading-tight">
-              Trabalhamos com quem
-              <br />quer estar <span className="text-[#1A6BFF]">pronto.</span>
+            <h2 className="text-[1.6rem] sm:text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight">
+              Trabalhamos com quem quer estar <span className="text-[#1A6BFF]">pronto.</span>
             </h2>
             <p className="text-white/40 text-sm mt-4">
               Empresas que crescem com estrutura tomam decisões diferentes.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            <div data-reveal data-delay="0" className="p-7 rounded-2xl border border-green-500/[0.18] bg-green-500/[0.04]">
+          <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
+            <div data-reveal data-delay="0" className="p-5 sm:p-7 rounded-2xl border border-green-500/[0.18] bg-green-500/[0.04]">
               <h3 className="font-bold text-green-400 mb-5 text-sm flex items-center gap-2">
                 <span className="w-5 h-5 rounded-full border border-green-500/40 flex items-center justify-center text-xs">✓</span>
                 Para quem é
@@ -826,7 +823,7 @@ export function LandingPage() {
                 ))}
               </ul>
             </div>
-            <div data-reveal data-delay="150" className="p-7 rounded-2xl border border-red-500/[0.18] bg-red-500/[0.04]">
+            <div data-reveal data-delay="150" className="p-5 sm:p-7 rounded-2xl border border-red-500/[0.18] bg-red-500/[0.04]">
               <h3 className="font-bold text-red-400 mb-5 text-sm flex items-center gap-2">
                 <span className="w-5 h-5 rounded-full border border-red-500/40 flex items-center justify-center text-xs">✗</span>
                 Para quem não é
@@ -845,14 +842,14 @@ export function LandingPage() {
       </section>
 
       {/* ── CTA FINAL / FORM ────────────────────────────────── */}
-      <section ref={formRef} className="px-5 py-24">
+      <section ref={formRef} className="px-4 sm:px-5 py-14 md:py-24">
         <div className="max-w-xl mx-auto">
-          <div data-reveal className="text-center mb-12">
+          <div data-reveal className="text-center mb-8 sm:mb-12">
             <div className="inline-flex items-center gap-2 text-[0.72rem] font-extrabold uppercase tracking-[1.5px] text-[#FF6B00] mb-6 px-4 py-1.5 rounded-full border border-[#FF6B00]/40 bg-[#FF6B00]/[0.08] shadow-[0_0_14px_rgba(255,107,0,0.15)]">
               <span className="text-[#FF6B00] font-black text-sm leading-none">+</span>
               Próximo passo
             </div>
-            <h2 className="text-4xl md:text-[2.6rem] font-extrabold leading-tight mb-5">
+            <h2 className="text-[1.6rem] sm:text-3xl md:text-[2.6rem] font-extrabold leading-tight mb-4 sm:mb-5">
               Em{' '}
               <span className="underline decoration-[#FF6B00] decoration-2 underline-offset-4">20 minutos</span>
               , você entende onde está travado e o que precisa para gerar receita com{' '}
@@ -868,7 +865,7 @@ export function LandingPage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={() => setShowAgendarModal(true)}
-              className="group relative flex items-center justify-center gap-3 px-8 py-4 rounded-2xl font-bold text-base transition-all duration-300 bg-[#FF6B00] hover:bg-[#e05e00] text-white shadow-[0_0_0_0_rgba(255,107,0,0.4)] hover:shadow-[0_0_32px_rgba(255,107,0,0.5)] hover:-translate-y-1 overflow-hidden"
+              className="w-full sm:w-auto group relative flex items-center justify-center gap-3 px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl font-bold text-base transition-all duration-300 bg-[#FF6B00] hover:bg-[#e05e00] text-white shadow-[0_0_0_0_rgba(255,107,0,0.4)] hover:shadow-[0_0_32px_rgba(255,107,0,0.5)] hover:-translate-y-1 overflow-hidden"
             >
               <span className="absolute inset-0 rounded-2xl border-2 border-[#FF6B00]/60 animate-ping opacity-30 pointer-events-none" />
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-5 h-5 shrink-0">
@@ -879,7 +876,7 @@ export function LandingPage() {
 
             <button
               onClick={scrollToPlans}
-              className="flex items-center justify-center gap-2 px-8 py-4 rounded-2xl font-bold text-base border border-white/[0.12] hover:border-white/25 text-white/70 hover:text-white transition-all duration-200 hover:bg-white/[0.04]"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl font-bold text-base border border-white/[0.12] hover:border-white/25 text-white/70 hover:text-white transition-all duration-200 hover:bg-white/[0.04]"
             >
               Ver propostas
             </button>

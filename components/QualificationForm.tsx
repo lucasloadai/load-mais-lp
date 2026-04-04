@@ -94,12 +94,12 @@ export default function QualificationForm({ onComplete }: Props) {
         </p>
 
         {/* Opções */}
-        <div className="grid grid-cols-2 gap-1.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {question.opcoes.map(op => (
             <button
               key={op.value}
               onClick={() => handleOption(op.value)}
-              className="text-left px-3 py-2 rounded-lg border border-white/[0.08] bg-white/[0.02] text-white/65 text-xs hover:border-[#FF6B00]/40 hover:bg-[#FF6B00]/[0.05] hover:text-white transition-all duration-200"
+              className="text-left px-3.5 py-2.5 rounded-lg border border-white/[0.08] bg-white/[0.02] text-white/65 text-[0.82rem] sm:text-xs hover:border-[#FF6B00]/40 hover:bg-[#FF6B00]/[0.05] hover:text-white transition-all duration-200"
             >
               {op.label}
             </button>
