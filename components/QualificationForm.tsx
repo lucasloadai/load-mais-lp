@@ -67,12 +67,20 @@ export default function QualificationForm({ onComplete }: Props) {
 
   return (
     <div className="mt-6 mx-auto max-w-2xl">
-      <div className="relative rounded-xl border border-white/10 bg-[#0D1A30]/60 px-5 py-4 text-left overflow-hidden backdrop-blur-sm">
+      <div className="relative rounded-xl border border-[#FF6B00]/50 bg-[#0D1A30]/60 px-5 py-4 text-left overflow-hidden backdrop-blur-sm shadow-[0_0_24px_rgba(255,107,0,0.18)] animate-pulse-border">
+        {/* Glow animado */}
+        <div className="absolute inset-0 rounded-xl pointer-events-none"
+          style={{
+            background: 'linear-gradient(90deg, rgba(255,107,0,0.06) 0%, transparent 60%)',
+            animation: 'pulseGlow 2.5s ease-in-out infinite',
+          }}
+        />
 
         {/* Header */}
         <div className="flex items-center justify-between mb-3">
-          <span className="text-[0.6rem] font-bold uppercase tracking-[1.5px] text-[#FF6B00]/70">
-            Diagnóstico e Personalização rápida pra você
+          <span className="text-[0.6rem] font-bold uppercase tracking-[1.5px] text-[#FF6B00]/70 flex items-center gap-1.5">
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#FF6B00] animate-ping" />
+            Descubra qual a solução ideal para seu momento em 10 segundos
           </span>
           <span className="text-[0.6rem] text-white/25">{step + 1}/{total}</span>
         </div>

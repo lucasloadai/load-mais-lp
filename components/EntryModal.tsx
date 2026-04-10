@@ -106,10 +106,37 @@ function getContextMessage(device: string): string {
 export function EntryModal({ form, dddMessage, dddEmoji, handlePhoneChange, onSubmit, onClose }: Props) {
   const greeting = getGreeting()
   const [device, setDevice] = useState<{ label: string; icon: JSX.Element } | null>(null)
+  const [step, setStep] = useState<1 | 2>(1)
+  const [email, setEmail] = useState('')
+  const [emailError, setEmailError] = useState('')
 
   useEffect(() => {
     setDevice(getDevice())
   }, [])
+
+  const firstName = form.getValues('nome')?.trim().split(' ')[0] ?? ''
+
+  // Intercepta step 1 — vai para step 2 em vez de submeter direto
+  const handleStep1Submit = (e: React.FormEvent) => {
+    e.preventDefault()
+    const nome = form.getValues('nome')
+    const whatsapp = form.getValues('whatsapp')
+    if (!nome || nome.length < 2 || !whatsapp || whatsapp.length < 8) return
+    setStep(2)
+  }
+
+  // Step 2 — valida email e chama onSubmit real
+  const handleStep2Submit = (e: React.FormEvent) => {
+    e.preventDefault()
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      setEmailError('Digite um e-mail válido')
+      return
+    }
+    setEmailError('')
+    form.setValue('email', email)
+    onSubmit(e)
+  }
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center px-4">
@@ -125,56 +152,113 @@ export function EntryModal({ form, dddMessage, dddEmoji, handlePhoneChange, onSu
           <div className="h-[3px] w-full bg-gradient-to-r from-[#FF6B00] via-[#FF8C00] to-[#1A6BFF]" />
 
           <div className="px-5 pt-6 pb-5 sm:px-7 sm:pt-7 sm:pb-6">
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 text-[0.68rem] font-extrabold uppercase tracking-[1.5px] text-[#FF6B00] px-3 py-1 rounded-full border border-[#FF6B00]/40 bg-[#FF6B00]/[0.08] mb-5">
-              <span className="font-black text-sm leading-none">+</span>
-              Acesso exclusivo
-            </div>
 
-            {/* Saudação */}
-            <h2 className="text-xl sm:text-2xl font-extrabold leading-tight tracking-tight mb-1">
-              Opaa,{' '}
-              <span className="text-[#FF6B00]">{greeting.text}!</span>{' '}
-              <span>{greeting.emoji}</span>
-            </h2>
+            {step === 1 ? (
+              <>
+                {/* Badge */}
+                <div className="inline-flex items-center gap-2 text-[0.68rem] font-extrabold uppercase tracking-[1.5px] text-[#FF6B00] px-3 py-1 rounded-full border border-[#FF6B00]/40 bg-[#FF6B00]/[0.08] mb-5">
+                  <span className="font-black text-sm leading-none">+</span>
+                  Acesso exclusivo
+                </div>
 
-            {/* Contexto de dispositivo + dia/hora */}
-            {device && (
-              <div className="flex items-start gap-2.5 bg-white/[0.04] border border-white/[0.07] rounded-xl px-3 py-2.5 sm:px-4 sm:py-3 mb-5">
-                <span className="text-[#FF6B00] mt-0.5 shrink-0">{device.icon}</span>
-                <p className="text-[0.75rem] sm:text-[0.8rem] text-white/55 leading-relaxed">
-                  {getContextMessage(device.label)}
+                {/* Saudação */}
+                <h2 className="text-xl sm:text-2xl font-extrabold leading-tight tracking-tight mb-1">
+                  Opaa,{' '}
+                  <span className="text-[#FF6B00]">{greeting.text}!</span>{' '}
+                  <span>{greeting.emoji}</span>
+                </h2>
+
+                {/* Contexto de dispositivo + dia/hora */}
+                {device && (
+                  <div className="flex items-start gap-2.5 bg-white/[0.04] border border-white/[0.07] rounded-xl px-3 py-2.5 sm:px-4 sm:py-3 mb-5">
+                    <span className="text-[#FF6B00] mt-0.5 shrink-0">{device.icon}</span>
+                    <p className="text-[0.75rem] sm:text-[0.8rem] text-white/55 leading-relaxed">
+                      {getContextMessage(device.label)}
+                    </p>
+                  </div>
+                )}
+
+                {/* Destaque */}
+                <div className="bg-white/[0.06] border border-white/[0.1] rounded-xl px-3 py-2.5 sm:px-4 sm:py-3 mb-5 flex items-center gap-3">
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-5 h-5 text-[#1A6BFF]">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21M6.75 8.25h10.5a2.25 2.25 0 0 1 2.25 2.25v6a2.25 2.25 0 0 1-2.25 2.25H6.75a2.25 2.25 0 0 1-2.25-2.25v-6a2.25 2.25 0 0 1 2.25-2.25Zm3 4.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm3.75-.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                    </svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-[#FF6B00]">
+                      <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" />
+                      <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" />
+                      <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" />
+                      <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
+                    </svg>
+                  </div>
+                  <p className="text-[0.78rem] sm:text-[0.82rem] text-white/80 leading-relaxed font-medium">
+                    Agora só falta você se apresentar — quero te mostrar muito mais dessa mágica! ✨
+                  </p>
+                </div>
+
+                <FormLead
+                  form={form}
+                  dddMessage={dddMessage}
+                  dddEmoji={dddEmoji}
+                  handlePhoneChange={handlePhoneChange}
+                  onSubmit={handleStep1Submit}
+                />
+              </>
+            ) : (
+              /* ── STEP 2: E-mail ── */
+              <form onSubmit={handleStep2Submit} className="space-y-5">
+                {/* Badge */}
+                <div className="inline-flex items-center gap-2 text-[0.68rem] font-extrabold uppercase tracking-[1.5px] text-[#FF6B00] px-3 py-1 rounded-full border border-[#FF6B00]/40 bg-[#FF6B00]/[0.08]">
+                  <span className="font-black text-sm leading-none">+</span>
+                  Acesso exclusivo
+                </div>
+
+                {/* WhatsApp salvo */}
+                <div className="flex items-center gap-2 text-green-400 font-semibold text-sm">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-4 h-4 shrink-0">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                  </svg>
+                  WhatsApp salvo
+                </div>
+
+                {/* Mensagem personalizada */}
+                <div>
+                  <h2 className="text-xl sm:text-2xl font-extrabold leading-tight tracking-tight mb-1">
+                    {firstName ? (
+                      <><span className="text-[#FF6B00]">{firstName}</span>, agora seu e-mail</>
+                    ) : 'Agora seu e-mail'}
+                  </h2>
+                  <p className="text-white/45 text-sm leading-relaxed">
+                    para liberarmos sua próxima experiência.
+                  </p>
+                </div>
+
+                {/* Input e-mail */}
+                <div>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => { setEmail(e.target.value); setEmailError('') }}
+                    placeholder="seu@email.com"
+                    autoComplete="email"
+                    inputMode="email"
+                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-[#FF6B00]/60 focus:ring-1 focus:ring-[#FF6B00]/40 transition"
+                  />
+                  {emailError && <p className="text-red-400 text-xs mt-1">{emailError}</p>}
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full bg-gradient-brand text-white font-bold py-4 rounded-xl text-lg transition-all duration-200 hover:opacity-90 hover:scale-[1.02] active:scale-[0.98] glow-orange"
+                >
+                  Continuar →
+                </button>
+
+                <p className="text-center text-white/40 text-xs">
+                  Sem spam. Seus dados são protegidos.
                 </p>
-              </div>
+              </form>
             )}
-
-            {/* Destaque */}
-            <div className="bg-white/[0.06] border border-white/[0.1] rounded-xl px-3 py-2.5 sm:px-4 sm:py-3 mb-5 flex items-center gap-3">
-              <div className="flex items-center gap-1.5 shrink-0">
-                {/* Robô */}
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-5 h-5 text-[#1A6BFF]">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21M6.75 8.25h10.5a2.25 2.25 0 0 1 2.25 2.25v6a2.25 2.25 0 0 1-2.25 2.25H6.75a2.25 2.25 0 0 1-2.25-2.25v-6a2.25 2.25 0 0 1 2.25-2.25Zm3 4.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm3.75-.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
-                </svg>
-                {/* Foguete */}
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-[#FF6B00]">
-                  <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" />
-                  <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" />
-                  <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" />
-                  <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
-                </svg>
-              </div>
-              <p className="text-[0.78rem] sm:text-[0.82rem] text-white/80 leading-relaxed font-medium">
-                Agora só falta você se apresentar — quero te mostrar muito mais dessa mágica! ✨
-              </p>
-            </div>
-
-            <FormLead
-              form={form}
-              dddMessage={dddMessage}
-              dddEmoji={dddEmoji}
-              handlePhoneChange={handlePhoneChange}
-              onSubmit={onSubmit}
-            />
           </div>
 
           <div className="px-5 pb-4 sm:px-7 sm:pb-5 text-center">

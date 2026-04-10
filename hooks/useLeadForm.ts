@@ -12,8 +12,9 @@ const leadSchema = z.object({
   nome: z.string().min(2, 'Nome deve ter ao menos 2 caracteres'),
   whatsapp: z
     .string()
-    .min(14, 'Número inválido')
-    .max(15, 'Número inválido'),
+    .min(8, 'Número inválido')
+    .max(22, 'Número inválido'),
+  email: z.string().email('E-mail inválido').optional().or(z.literal('')),
 })
 
 export type LeadFormData = z.infer<typeof leadSchema>
@@ -27,7 +28,7 @@ export function useLeadForm() {
 
   const form = useForm<LeadFormData>({
     resolver: zodResolver(leadSchema),
-    defaultValues: { nome: '', whatsapp: '' },
+    defaultValues: { nome: '', whatsapp: '', email: '' },
   })
 
   const handlePhoneChange = useCallback(

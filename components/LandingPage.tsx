@@ -660,7 +660,7 @@ export function LandingPage() {
               O nível de estrutura define o nível do seu <span className="text-[#1A6BFF]">crescimento.</span>
             </h2>
             <p className="text-white/45 text-sm mt-4 max-w-md mx-auto leading-relaxed">
-              Cada proposta representa um nível de maturidade do seu sistema comercial.
+              Cada solução representa um nível de maturidade comercial sistêmica no seu negócio.
             </p>
 
             {/* espaço reservado — bloco de análise foi movido para o Hero */}
