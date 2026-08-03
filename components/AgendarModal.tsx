@@ -45,13 +45,13 @@ export function AgendarModal({ leadName, onClose }: Props) {
           <iframe
             src={embedUrl}
             width="100%"
-            height="600"
+            className="block"
+            style={{ display: 'block', background: 'transparent', height: 'min(680px, 72vh)' }}
             frameBorder="0"
             title="Agendar reunião"
-            style={{ display: 'block', background: 'transparent' }}
           />
-          {/* Cobre o logo do Cal.com */}
-          <div className="absolute bottom-0 left-0 right-0 h-16 bg-[#0C1524]" />
+          {/* Cobre apenas o badge "Powered by Cal.com" no canto inferior direito */}
+          <div className="absolute bottom-0 right-0 w-36 h-6 bg-[#0C1524]" />
         </div>
       </div>
     </div>

@@ -14,6 +14,7 @@ const schema = z.object({
   nome: z.string().min(2).max(100).trim(),
   whatsapp: z.string().min(10).max(20),
   ddd: z.string().length(2),
+  email: z.string().email().optional(),
   instagram: z.string().max(50).optional(),
   instagram_followers: z.number().int().min(0).optional(),
   instagram_verified: z.boolean().optional(),
@@ -52,6 +53,7 @@ function buildEmailHtml(data: z.infer<typeof schema>): string {
   const rows = [
     ['Nome', data.nome],
     ['WhatsApp', `<a href="${whatsappLink}" style="color:#1A6BFF">${data.whatsapp}</a>`],
+    data.email ? ['E-mail', data.email] : null,
     ['DDD', data.ddd],
     data.instagram ? ['Instagram', `@${data.instagram}`] : null,
     data.instagram_followers != null ? ['Seguidores', data.instagram_followers.toLocaleString('pt-BR')] : null,
