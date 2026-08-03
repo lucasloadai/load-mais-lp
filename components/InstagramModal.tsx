@@ -149,6 +149,7 @@ export function InstagramModal({
         body: JSON.stringify({
           nome: formData.nome,
           whatsapp: cleanPhone,
+          email: formData.email || undefined,
           ddd,
           instagram: profile.username,
           instagram_followers: profile.followers_count,

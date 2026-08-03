@@ -506,7 +506,7 @@ export function LandingPage() {
             onClick={scrollToPlans}
             className="w-full sm:w-auto flex items-center justify-center gap-2 px-7 py-3.5 border border-white/[0.12] hover:border-white/25 text-white/70 hover:text-white font-semibold text-sm rounded-xl transition-all duration-200 hover:bg-white/[0.04]"
           >
-            Ver propostas
+            Conhecer as soluções
           </button>
         </div>
 
@@ -530,6 +530,11 @@ export function LandingPage() {
             <span className="text-[#FF6B00] font-black text-sm leading-none">+</span>
             Por que sua empresa trava
           </div>
+          {firstName && (
+            <p className="text-[#FF6B00] font-extrabold text-lg sm:text-xl mb-2 tracking-tight">
+              {firstName}, entenda o que está travando seu crescimento:
+            </p>
+          )}
           <h2 className="text-[1.6rem] sm:text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight">
             Se seu crescimento não é previsível, ele não é <span className="text-[#1A6BFF]">escalável.</span>
           </h2>
@@ -541,13 +546,25 @@ export function LandingPage() {
               key={p.title}
               data-reveal
               data-delay={idx * 120}
-              className="p-5 sm:p-7 rounded-2xl border border-white/[0.07] bg-white/[0.025] hover:border-[#FF6B00]/40 hover:bg-[#FF6B00]/[0.03] hover:-translate-y-2 hover:shadow-[0_12px_40px_rgba(255,107,0,0.12)] transition-all duration-300 group"
+              className="relative overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.025] hover:border-[#FF6B00]/50 hover:bg-[#FF6B00]/[0.04] hover:-translate-y-2 hover:shadow-[0_16px_48px_rgba(255,107,0,0.15)] transition-all duration-300 group"
             >
-              <div className="w-10 h-10 rounded-xl bg-[#1A6BFF]/10 border border-[#1A6BFF]/25 flex items-center justify-center text-[#1A6BFF] mb-5 group-hover:bg-[#FF6B00]/15 group-hover:border-[#FF6B00]/35 group-hover:text-[#FF6B00] group-hover:shadow-[0_0_16px_rgba(255,107,0,0.2)] transition-all duration-300">
-                {p.icon}
+              {/* Barra lateral animada */}
+              <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-[#FF6B00] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+              <div className="p-6 sm:p-7">
+                {/* Número grande de fundo */}
+                <div className="absolute top-3 right-4 text-[5rem] font-black text-white/[0.03] leading-none select-none pointer-events-none group-hover:text-[#FF6B00]/[0.06] transition-colors duration-300">
+                  {String(idx + 1).padStart(2, '0')}
+                </div>
+
+                {/* Ícone */}
+                <div className="w-10 h-10 rounded-xl bg-[#FF6B00]/[0.08] border border-[#FF6B00]/20 flex items-center justify-center text-[#FF6B00]/60 mb-4 group-hover:bg-[#FF6B00]/15 group-hover:border-[#FF6B00]/40 group-hover:text-[#FF6B00] group-hover:shadow-[0_0_20px_rgba(255,107,0,0.25)] transition-all duration-300">
+                  {p.icon}
+                </div>
+
+                <h3 className="text-base font-bold mb-2 group-hover:text-[#FF6B00] transition-colors duration-200">{p.title}</h3>
+                <p className="text-white/45 leading-relaxed text-sm">{p.desc}</p>
               </div>
-              <h3 className="text-base font-bold mb-2.5 group-hover:text-[#FF6B00] transition-colors">{p.title}</h3>
-              <p className="text-white/50 leading-relaxed text-sm">{p.desc}</p>
             </div>
           ))}
         </div>
@@ -569,33 +586,81 @@ export function LandingPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-start">
-            {/* Checklist com linha conectora */}
+          {/* Orbital layout — desktop */}
+          <div className="hidden md:block relative mx-auto" style={{ height: '540px', maxWidth: '680px' }}>
+            {/* Orbit ring */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[440px] h-[440px] rounded-full border border-[#1A6BFF]/10" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full border border-[#FF6B00]/08" />
+
+            {/* Center — firstName */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+              <div className="w-32 h-32 rounded-full flex flex-col items-center justify-center text-center shadow-[0_0_60px_rgba(26,107,255,0.25),0_0_120px_rgba(255,107,0,0.12)]"
+                style={{ background: 'radial-gradient(circle, rgba(26,107,255,0.18) 0%, rgba(255,107,0,0.08) 100%)', border: '1.5px solid rgba(255,255,255,0.15)' }}>
+                <span className="text-white font-black text-xl leading-tight">{firstName || 'Você'}</span>
+                <span className="text-white/30 text-[0.6rem] mt-1 uppercase tracking-widest">no centro</span>
+              </div>
+            </div>
+
+            {/* Orbital items: 5 deliverables (outer ring) + 4 steps (inner ring) */}
+            {deliverables.map((d, i) => {
+              const angle = (360 / 5) * i - 90
+              const r = 210
+              const x = r * Math.cos(angle * Math.PI / 180)
+              const y = r * Math.sin(angle * Math.PI / 180)
+              return (
+                <div
+                  key={d}
+                  className="absolute w-36"
+                  style={{ top: '50%', left: '50%', transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))` }}
+                >
+                  <div className="p-3 rounded-xl border border-[#1A6BFF]/25 bg-[#1A6BFF]/08 hover:border-[#1A6BFF]/50 hover:bg-[#1A6BFF]/15 transition-all duration-200 text-center">
+                    <span className="text-[#1A6BFF] font-black text-sm">✓</span>
+                    <p className="text-white/65 text-[0.68rem] leading-tight mt-1">{d}</p>
+                  </div>
+                </div>
+              )
+            })}
+
+            {deliverableSteps.map((s, i) => {
+              const angle = (360 / 4) * i - 45
+              const r = 128
+              const x = r * Math.cos(angle * Math.PI / 180)
+              const y = r * Math.sin(angle * Math.PI / 180)
+              return (
+                <div
+                  key={s.title}
+                  className="absolute w-28"
+                  style={{ top: '50%', left: '50%', transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))` }}
+                >
+                  <div className="p-2.5 rounded-xl border border-[#FF6B00]/25 bg-[#FF6B00]/06 hover:border-[#FF6B00]/50 hover:bg-[#FF6B00]/12 transition-all duration-200 text-center">
+                    <span className="text-[#FF6B00] font-black text-xs">0{i + 1}</span>
+                    <p className="text-white/65 text-[0.65rem] font-semibold mt-0.5">{s.title}</p>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Mobile layout — lista */}
+          <div className="md:hidden grid gap-8">
             <ul className="relative">
               <div className="absolute left-[9px] top-3 bottom-3 w-px bg-gradient-to-b from-[#1A6BFF]/60 via-[#1A6BFF]/30 to-transparent" />
               {deliverables.map((d, idx) => (
                 <li key={d} className="relative flex items-start gap-4 pb-5 last:pb-0">
-                  <span className={`w-[18px] h-[18px] rounded-full flex items-center justify-center text-[0.55rem] font-bold flex-shrink-0 mt-[2px] relative z-10 shadow-[0_0_10px_rgba(26,107,255,0.45)] ${
-                    idx === 0 ? 'bg-[#1A6BFF] text-white' : 'bg-[#1A6BFF]/80 text-white'
-                  }`}>✓</span>
+                  <span className="w-[18px] h-[18px] rounded-full bg-[#1A6BFF]/80 text-white flex items-center justify-center text-[0.55rem] font-bold flex-shrink-0 mt-[2px] relative z-10 shadow-[0_0_10px_rgba(26,107,255,0.45)]">✓</span>
                   <span className="text-sm text-white/65 leading-relaxed">{d}</span>
                 </li>
               ))}
             </ul>
-
-            {/* Steps com linha conectora */}
             <div className="relative">
               <div className="absolute left-[22px] top-10 bottom-10 w-px bg-gradient-to-b from-[#1A6BFF]/40 via-[#1A6BFF]/20 to-transparent" />
               {deliverableSteps.map((item, i) => (
-                <div
-                  key={item.title}
-                  className="relative flex items-start gap-4 p-5 mb-3 last:mb-0 rounded-xl border border-white/[0.07] bg-white/[0.025] hover:border-[#1A6BFF]/35 hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(26,107,255,0.12)] transition-all duration-200 group"
-                >
-                  <div className="w-9 h-9 rounded-lg bg-[#1A6BFF] flex items-center justify-center text-white font-extrabold text-xs flex-shrink-0 shadow-[0_0_12px_rgba(26,107,255,0.4)] group-hover:shadow-[0_0_18px_rgba(26,107,255,0.55)] transition-all duration-200 relative z-10">
+                <div key={item.title} className="relative flex items-start gap-4 p-5 mb-3 last:mb-0 rounded-xl border border-white/[0.07] bg-white/[0.025]">
+                  <div className="w-9 h-9 rounded-lg bg-[#1A6BFF] flex items-center justify-center text-white font-extrabold text-xs flex-shrink-0 shadow-[0_0_12px_rgba(26,107,255,0.4)] relative z-10">
                     {String(i + 1).padStart(2, '0')}
                   </div>
                   <div>
-                    <p className="font-semibold text-white text-sm group-hover:text-[#1A6BFF] transition-colors">{item.title}</p>
+                    <p className="font-semibold text-white text-sm">{item.title}</p>
                     <p className="text-xs text-white/40 mt-1 leading-relaxed">{item.desc}</p>
                   </div>
                 </div>
@@ -624,25 +689,54 @@ export function LandingPage() {
             <span className="text-[#FF6B00] font-black text-sm leading-none">+</span>
             O fluxo básico
           </div>
+          {firstName && (
+            <p className="text-[#FF6B00] font-extrabold text-lg sm:text-xl mb-2">
+              {firstName}, veja como vai funcionar na prática:
+            </p>
+          )}
           <h2 className="text-[1.6rem] sm:text-3xl md:text-4xl lg:text-5xl font-extrabold">
             Como estruturamos sua <span className="text-[#1A6BFF]">máquina de crescimento</span>
           </h2>
         </div>
 
+        {/* Timeline desktop — linha conectora com light beam */}
+        <div className="hidden md:block relative mb-2">
+          <div className="absolute top-[2.6rem] left-[12.5%] right-[12.5%] h-px bg-gradient-to-r from-transparent via-[#1A6BFF]/40 to-transparent overflow-hidden">
+            <div className="absolute inset-y-0 animate-lightBeam" style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.9) 40%, rgba(26,107,255,1) 50%, rgba(255,255,255,0.9) 60%, transparent 100%)', width: '30%' }} />
+          </div>
+        </div>
+
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           {steps.map((s, i) => (
-            <div key={s.num} data-reveal data-delay={i * 100} className="relative">
-              {i < steps.length - 1 && (
-                <div className="hidden md:block absolute top-[2.25rem] left-[62%] w-full h-px bg-gradient-to-r from-[#1A6BFF]/35 to-transparent z-10" />
-              )}
-              <div className="p-4 sm:p-6 rounded-2xl border border-white/[0.07] bg-white/[0.025] hover:border-[#1A6BFF]/40 hover:-translate-y-2 hover:shadow-[0_12px_32px_rgba(26,107,255,0.15)] transition-all duration-300 h-full group">
-                <div className="w-11 h-11 rounded-xl bg-[#1A6BFF]/12 border border-[#1A6BFF]/25 flex items-center justify-center text-[#1A6BFF] mb-5 group-hover:bg-[#1A6BFF]/20 group-hover:shadow-[0_0_16px_rgba(26,107,255,0.3)] transition-all duration-300">
+            <div key={s.num} data-reveal data-delay={i * 120} className="relative group">
+              <div className="flex flex-col items-center text-center p-4 sm:p-6 rounded-2xl border border-white/[0.07] bg-white/[0.025] hover:border-[#1A6BFF]/50 hover:-translate-y-2 hover:shadow-[0_12px_40px_rgba(26,107,255,0.18)] transition-all duration-300 h-full">
+
+                {/* Número circular com glow */}
+                <div className="relative mb-4">
+                  <div className="w-12 h-12 rounded-full bg-[#080E18] border-2 border-[#1A6BFF]/40 flex items-center justify-center text-[#1A6BFF] font-black text-base group-hover:border-[#1A6BFF] group-hover:shadow-[0_0_20px_rgba(26,107,255,0.4)] transition-all duration-300 z-10 relative">
+                    {s.num}
+                  </div>
+                  {/* Ping animado */}
+                  <div className="absolute inset-0 rounded-full border-2 border-[#1A6BFF]/20 animate-ping opacity-0 group-hover:opacity-100" />
+                </div>
+
+                {/* Ícone */}
+                <div className="text-[#1A6BFF]/50 group-hover:text-[#1A6BFF] transition-colors duration-300 mb-3">
                   {s.icon}
                 </div>
-                <div className="text-[0.68rem] font-bold text-white/25 uppercase tracking-widest mb-1">{s.num}</div>
-                <h3 className="font-bold text-white text-sm mb-2 group-hover:text-[#1A6BFF] transition-colors">{s.title}</h3>
-                <p className="text-xs text-white/45 leading-relaxed">{s.desc}</p>
+
+                <h3 className="font-bold text-white text-sm mb-1.5 group-hover:text-[#1A6BFF] transition-colors">{s.title}</h3>
+                <p className="text-xs text-white/40 leading-relaxed">{s.desc}</p>
               </div>
+
+              {/* Seta entre steps (mobile) */}
+              {i < steps.length - 1 && (
+                <div className="hidden sm:flex md:hidden absolute -right-2 top-1/2 -translate-y-1/2 z-10 text-[#1A6BFF]/30">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-4 h-4">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                  </svg>
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -659,14 +753,10 @@ export function LandingPage() {
             <h2 className="text-[1.6rem] sm:text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight">
               O nível de estrutura define o nível do seu <span className="text-[#1A6BFF]">crescimento.</span>
             </h2>
-            <p className="text-white/45 text-sm mt-4 max-w-md mx-auto leading-relaxed">
-              Cada solução representa um nível de maturidade comercial sistêmica no seu negócio.
-            </p>
 
-            {/* espaço reservado — bloco de análise foi movido para o Hero */}
-
-            {/* Form de qualificação — aparece antes dos planos */}
+            {/* Form de qualificação — CTA principal */}
             {!qualificationDone && (
+              <div className="mt-10 mx-auto max-w-3xl w-full">
               <QualificationForm
                 onComplete={(result, answers) => {
                   setQualification({ result, answers })
@@ -687,6 +777,7 @@ export function LandingPage() {
                   }).catch(() => {})
                 }}
               />
+              </div>
             )}
 
             {/* Resultado da qualificação */}
@@ -704,8 +795,8 @@ export function LandingPage() {
             )}
           </div>
 
-          <div className="-mx-4 sm:mx-0">
-            <div className="flex gap-4 overflow-x-auto pb-4 px-4 sm:px-0 snap-x snap-mandatory md:grid md:grid-cols-4 md:overflow-visible md:pb-0">
+          <div>
+            <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory md:grid md:grid-cols-4 md:overflow-visible md:pb-0" style={{ WebkitOverflowScrolling: 'touch' }}>
             {plans.map((plan, idx) => {
               const isRecommended = recommendedPlan === plan.id
               const isHighlighted = isRecommended || plan.highlight
@@ -714,7 +805,7 @@ export function LandingPage() {
                 key={plan.id}
                 data-reveal
                 data-delay={idx * 100}
-                className={`snap-start flex-shrink-0 w-[80vw] sm:w-72 md:w-auto relative rounded-[18px] p-5 sm:p-6 flex flex-col transition-all duration-300 hover:-translate-y-2 ${
+                className={`snap-start flex-shrink-0 w-[85vw] sm:w-80 md:w-auto relative rounded-[18px] p-5 sm:p-6 flex flex-col transition-all duration-300 hover:-translate-y-2 ${
                   isRecommended
                     ? 'bg-[#0D1A30] border-[1.5px] border-[#FF6B00]/70 shadow-[0_8px_40px_rgba(255,107,0,0.22)] hover:shadow-[0_16px_48px_rgba(255,107,0,0.32)]'
                     : isHighlighted
@@ -747,7 +838,7 @@ export function LandingPage() {
                 </div>
 
                 <div className="text-[0.62rem] font-bold tracking-[1.5px] uppercase text-white/35 mb-1">
-                  Proposta {plan.id}
+                  Solução {plan.id}
                 </div>
                 <div className="text-xl font-extrabold tracking-tight mb-3">{plan.name}</div>
                 <p className="text-[0.82rem] text-white/50 leading-relaxed mb-5 flex-grow">{plan.desc}</p>
@@ -766,7 +857,7 @@ export function LandingPage() {
                 </ul>
 
                 <div className="text-[0.62rem] font-semibold text-white/30 uppercase tracking-widest mb-2">
-                  Mínimo: {plan.name}
+                  Solução: {plan.name}
                 </div>
 
                 <button

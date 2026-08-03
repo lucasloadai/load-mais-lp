@@ -7,6 +7,15 @@
   50% { opacity: 1; }
 }
 
+@keyframes lightBeam {
+  0% { transform: translateX(-150%); }
+  100% { transform: translateX(500%); }
+}
+
+.animate-lightBeam {
+  animation: lightBeam 2.8s ease-in-out infinite;
+}
+
 @layer base {
   :root {
     --brand-primary: #FF6B00;
